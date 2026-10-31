@@ -1,0 +1,200 @@
+/* ==========================================================================
+   desktop.css: the wallpaper, desktop icon, taskbar and start menu.
+   ========================================================================== */
+
+.desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--desktop-bg);
+  user-select: none;
+}
+
+/* The pixel-art forest. The canvas is tiny; the browser blows it up crisply. */
+.wallpaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* Very faint CRT scanlines over everything on the desktop. */
+.desktop__scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    rgba(106, 95, 148, 0.07) 3px,
+    rgba(106, 95, 148, 0.07) 4px
+  );
+  z-index: 50;
+}
+
+/* --- Desktop icon -------------------------------------------------------- */
+
+.desktop__icons {
+  position: absolute;
+  top: calc(var(--px) * 4);
+  left: calc(var(--px) * 4);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 4);
+  z-index: 1;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  width: calc(var(--px) * 24);
+  padding: calc(var(--px) * 2);
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  font-size: 22px;
+  text-align: center;
+  /* A deep-plum outline keeps the white label readable on the pale sky. */
+  text-shadow:
+    1px 1px 0 var(--plum-shadow),
+    -1px 1px 0 var(--plum-shadow),
+    1px -1px 0 var(--plum-shadow),
+    -1px -1px 0 var(--plum-shadow),
+    0 2px 0 var(--plum-shadow);
+}
+
+.desktop-icon:hover,
+.desktop-icon:focus-visible {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* --- Window area ---------------------------------------------------------- */
+
+/* Centres the browser window above the taskbar. It ignores clicks itself so
+   the desktop icon underneath stays clickable around the window. */
+.workspace {
+  position: absolute;
+  inset: 0 0 var(--taskbar-height) 0;
+  display: grid;
+  /* `minmax(0, 1fr)` stops the window's contents from stretching the grid past the screen. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  padding: calc(var(--px) * 6);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.workspace > * {
+  pointer-events: auto;
+}
+
+.workspace--maximized {
+  padding: 0;
+}
+
+/* --- Taskbar -------------------------------------------------------------- */
+
+.taskbar {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--taskbar-height);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  padding: 0 calc(var(--px) * 2);
+  background: var(--taskbar);
+  border-top: var(--px) solid var(--ink);
+  box-shadow: inset 0 var(--px) 0 var(--taskbar-hi);
+  z-index: 40;
+}
+
+.taskbar__button {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  height: calc(var(--px) * 8);
+  padding: 0 calc(var(--px) * 3);
+  border: 0;
+  background: var(--taskbar-hi);
+  color: var(--lilac-text);
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.taskbar__button:hover {
+  background: var(--white);
+}
+
+.taskbar__button:active {
+  transform: translateY(var(--px));
+}
+
+.taskbar__start {
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+
+/* The window's button looks "pressed in" while the window is showing. */
+.taskbar__task {
+  flex: 0 1 calc(var(--px) * 60);
+  min-width: 0;
+}
+
+.taskbar__task span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskbar__task--active {
+  background: var(--taskbar-lo);
+}
+
+.taskbar__clock {
+  margin-left: auto;
+  padding: calc(var(--px) * 1.5) calc(var(--px) * 3);
+  background: var(--taskbar-lo);
+  color: var(--lilac-text);
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+/* --- Start menu ----------------------------------------------------------- */
+
+.start {
+  position: relative;
+}
+
+.start-menu {
+  position: absolute;
+  bottom: calc(100% + var(--px) * 3);
+  left: var(--px);
+  min-width: calc(var(--px) * 64);
+  margin: 0;
+  padding: var(--px);
+  list-style: none;
+  background: var(--taskbar-hi);
+}
+
+.start-menu button {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  width: 100%;
+  padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  border: 0;
+  background: transparent;
+  color: var(--lilac-text);
+  font-size: 22px;
+  text-align: left;
+}
+
+.start-menu button:hover,
+.start-menu button:focus-visible {
+  background: var(--teal-400);
+  color: var(--teal-ink);
+}

@@ -1,0 +1,405 @@
+/* ==========================================================================
+   browser.css: the retro browser window.
+   A teal-blue frame (tabs, address row, bottom strip) around a white screen.
+   ========================================================================== */
+
+.window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* The default size; dragging the window's edges sets --window-width/height. */
+  width: min(var(--window-width, calc(var(--px) * 240)), 100%);
+  height: min(var(--window-height, calc(var(--px) * 160)), 100%);
+  background: var(--teal-400);
+  /* Pixel-stepped outline plus a soft, hard-edged drop shadow. */
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink),
+    calc(var(--px) * 3) calc(var(--px) * 3) 0 0 rgba(74, 59, 124, 0.35);
+  animation: window-open 0.3s steps(5) both;
+}
+
+/* `display: flex` above would otherwise override the `hidden` attribute. */
+.window[hidden] {
+  display: none;
+}
+
+.window--maximized {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes window-open {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Title bar: tabs + window controls ------------------------------------ */
+
+.window__titlebar {
+  display: flex;
+  align-items: flex-end;
+  flex: none;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3) calc(var(--px) * 4) 0;
+  background: var(--teal-400);
+}
+
+.tab-strip {
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
+  gap: calc(var(--px) * 3);
+  min-width: 0;
+  padding-top: var(--px); /* room for the tabs' top outline */
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 1 calc(var(--px) * 50);
+  min-width: calc(var(--px) * 14);
+  height: calc(var(--px) * 9);
+  padding: 0 calc(var(--px) * 3);
+  border: 0;
+  background: var(--teal-500);
+  color: var(--teal-ink);
+  font-size: 22px;
+  text-align: left;
+  /* Outline on the top, left and right only; the bottom joins the toolbar. */
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink);
+}
+
+/* A lone welcome tab is allowed to be wide enough to read the whole greeting. */
+.tab:only-child {
+  flex-basis: calc(var(--px) * 90);
+}
+
+.tab__label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tab:not(.tab--active):hover {
+  background: var(--teal-300);
+}
+
+/* The selected tab matches the toolbar and "opens into" it. */
+.tab--active {
+  z-index: 2;
+  height: calc(var(--px) * 10);
+  margin-bottom: calc(var(--px) * -1);
+  padding-bottom: var(--px);
+  background: var(--teal-300);
+}
+
+/* Tabs other than the welcome tab pop in one after another once revealed. */
+.tab:not(:first-child) {
+  animation: tab-pop 0.45s steps(5) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+@keyframes tab-pop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * 8));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The three little squares in the corner. */
+.window-controls {
+  display: flex;
+  align-self: center;
+  gap: calc(var(--px) * 3);
+  margin: 0 var(--px) var(--px) calc(var(--px) * 2);
+}
+
+.window-controls__button {
+  display: grid;
+  place-items: center;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 7);
+  padding: 0;
+  border: 0;
+  background: var(--teal-200);
+}
+
+.window-controls__button:hover {
+  background: var(--white);
+}
+
+.window-controls__button:active {
+  transform: translateY(var(--px));
+}
+
+/* --- Toolbar (the address row) --------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: calc(var(--px) * 3);
+  padding: calc(var(--px) * 3) calc(var(--px) * 5);
+  background: var(--teal-300);
+  border-top: var(--px) solid var(--ink);
+  border-bottom: var(--px) solid var(--ink);
+}
+
+.toolbar__button {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(var(--px) * 8);
+  height: calc(var(--px) * 8);
+  padding: 0;
+  border: 0;
+  background: var(--teal-200);
+}
+
+.toolbar__button:hover:not(:disabled) {
+  background: var(--white);
+}
+
+.toolbar__button:active:not(:disabled) {
+  transform: translateY(var(--px));
+}
+
+.toolbar__button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.address-bar {
+  --border-color: var(--teal-600);
+  flex: 1;
+  min-width: 0;
+  height: calc(var(--px) * 8);
+  margin: 0 var(--px);
+  padding: 0 calc(var(--px) * 3);
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  color: var(--blue-text);
+  font-size: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Viewport: the white screen where pages are shown ---------------------- */
+
+.window__viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--screen);
+  container-type: inline-size; /* lets pages size things relative to the window (cqw units) */
+}
+
+.page-transition {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  animation: page-in 0.3s steps(4) both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--px) * 2));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Chunky pixel scrollbar (Chrome / Edge / Safari). */
+.window__viewport::-webkit-scrollbar {
+  width: calc(var(--px) * 4);
+}
+
+.window__viewport::-webkit-scrollbar-track {
+  background: var(--teal-200);
+}
+
+.window__viewport::-webkit-scrollbar-thumb {
+  background: var(--teal-500);
+  border: var(--px) solid var(--teal-200);
+}
+
+/* Firefox only understands the standard property. */
+@supports not selector(::-webkit-scrollbar) {
+  .window__viewport {
+    scrollbar-color: var(--teal-500) var(--teal-200);
+  }
+}
+
+/* --- Bottom strip: the frame's lower edge ---------------------------------- */
+
+.window__statusbar {
+  flex: none;
+  height: calc(var(--px) * 6);
+  background: var(--teal-400);
+  border-top: var(--px) solid var(--ink);
+}
+
+/* --- Resize handles ---------------------------------------------------------
+   Invisible grab areas straddling the window's outline. They are positioned
+   relative to .window. The bottom-right one is a real button showing the grip. */
+
+.resize {
+  position: absolute;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+}
+
+.resize--n,
+.resize--s {
+  left: calc(var(--px) * 3);
+  right: calc(var(--px) * 3);
+  height: calc(var(--px) * 3);
+  cursor: ns-resize;
+}
+
+.resize--n {
+  top: calc(var(--px) * -2);
+}
+
+.resize--s {
+  bottom: calc(var(--px) * -2);
+  right: calc(var(--px) * 7); /* leave room for the corner grip */
+}
+
+.resize--e,
+.resize--w {
+  top: calc(var(--px) * 3);
+  bottom: calc(var(--px) * 3);
+  width: calc(var(--px) * 3);
+  cursor: ew-resize;
+}
+
+.resize--e {
+  right: calc(var(--px) * -2);
+  bottom: calc(var(--px) * 7);
+}
+
+.resize--w {
+  left: calc(var(--px) * -2);
+}
+
+.resize--ne,
+.resize--nw,
+.resize--sw {
+  width: calc(var(--px) * 5);
+  height: calc(var(--px) * 5);
+}
+
+.resize--ne {
+  top: calc(var(--px) * -2);
+  right: calc(var(--px) * -2);
+  cursor: nesw-resize;
+}
+
+.resize--nw {
+  top: calc(var(--px) * -2);
+  left: calc(var(--px) * -2);
+  cursor: nwse-resize;
+}
+
+.resize--sw {
+  bottom: calc(var(--px) * -2);
+  left: calc(var(--px) * -2);
+  cursor: nesw-resize;
+}
+
+.resize--se {
+  right: calc(var(--px) * -2);
+  bottom: calc(var(--px) * -2);
+  display: grid;
+  place-items: center;
+  width: calc(var(--px) * 9);
+  height: calc(var(--px) * 9);
+  cursor: nwse-resize;
+}
+
+.resize--se:hover,
+.resize--se:focus-visible {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* --- Phones: the browser fills the screen and tabs scroll sideways -------- */
+
+@media (max-width: 640px) {
+  .workspace {
+    padding: 0;
+  }
+
+  .window {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Nothing to resize or minimise on a phone-sized screen. */
+  .resize,
+  .window-controls {
+    display: none;
+  }
+
+  .tab-strip {
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-left: var(--px);
+    padding-right: var(--px);
+  }
+
+  .tab-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    max-width: calc(var(--px) * 50);
+  }
+
+  .tab:only-child {
+    flex-basis: auto;
+  }
+
+  /* Scrolling tabs can't overlap the toolbar border, so skip the "open" effect. */
+  .tab--active {
+    height: calc(var(--px) * 9);
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .toolbar {
+    padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  }
+
+  .address-bar {
+    font-size: 20px;
+  }
+}

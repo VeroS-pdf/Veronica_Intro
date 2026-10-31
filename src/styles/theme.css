@@ -1,0 +1,151 @@
+/* ==========================================================================
+   theme.css: design tokens, resets and small helpers shared by everything.
+
+   Change a colour or the pixel size here and the whole site follows.
+   ========================================================================== */
+
+:root {
+  /* One "art pixel" on screen. Borders, spacing and sprites are all multiples
+     of it, so making it bigger makes the whole site chunkier. */
+  --px: 4px;
+
+  /* Soft plum used for outlines on windows, tabs and buttons */
+  --ink: #6a5f94;
+  --white: #ffffff;
+
+  /* Teal-blue browser frame: title bar, tabs and the address row */
+  --teal-200: #d6f4f6;
+  --teal-300: #b4e9ee; /* address row and the selected tab */
+  --teal-400: #8fd9e1; /* title bar and bottom strip */
+  --teal-500: #66c5d1; /* unselected tabs and buttons */
+  --teal-600: #3da5b5;
+  --teal-ink: #17505d; /* text and icons that sit on teal */
+
+  /* The browser "screen" itself: white with blue text */
+  --screen: #ffffff;
+  --blue-text: #3568c9;
+  --blue-deep: #2a56ab;
+  --blue-soft: #8fb3ee;
+  --blue-pale: #eef4ff; /* cards on the white screen */
+  --blue-line: #b3cdf6;
+  --lilac-shadow: #dfd4f7;
+
+  /* Little accents */
+  --pink: #ffb4d9;
+  --yellow: #ffcf3d;
+  --gold: #f0a830;
+
+  /* Pastel purple dragons (all one hue: light, mid, deep, and the eye) */
+  --dragon-light: #e6dafb;
+  --dragon-mid: #c7b0f2;
+  --dragon-deep: #9d82de;
+  --dragon-eye: #54399a;
+
+  /* Desktop: pastel lilac taskbar to match the purple wallpaper */
+  --lilac-text: #43347a;
+  --plum-shadow: #4a3b7c;
+  --taskbar: #e2d6fa;
+  --taskbar-hi: #f6f1ff;
+  --taskbar-lo: #c9b8f0;
+  --desktop-bg: #cdbdf0;
+
+  --font-display: 'Jersey 10', 'Courier New', monospace;
+  --font-body: 'VT323', 'Courier New', monospace;
+
+  --taskbar-height: calc(var(--px) * 11);
+}
+
+/* Phones: smaller art pixels so everything still fits. */
+@media (max-width: 640px) {
+  :root {
+    --px: 3px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: var(--desktop-bg);
+  color: var(--blue-text);
+  font-family: var(--font-body);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Keyboard focus ring that matches the pixel style. */
+:focus-visible {
+  outline: var(--px) dashed var(--blue-text);
+  outline-offset: calc(var(--px) * 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Helpers
+   -------------------------------------------------------------------------- */
+
+/* Sprites are SVGs; never let the browser smooth or squash them. */
+.sprite {
+  display: block;
+  height: auto;
+  flex: none;
+  shape-rendering: crispEdges;
+}
+
+/* A solid border made of hard pixel steps: notched corners, no curves.
+   Set `--border-color` on an element to change its colour. */
+.pixel-border {
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--border-color, var(--ink)),
+    0 var(--px) 0 0 var(--border-color, var(--ink)),
+    calc(var(--px) * -1) 0 0 0 var(--border-color, var(--ink)),
+    var(--px) 0 0 0 var(--border-color, var(--ink));
+}
+
+/* Rounds the four corners of a filled shape by exactly one art pixel. */
+.pixel-round {
+  clip-path: polygon(
+    var(--px) 0,
+    calc(100% - var(--px)) 0,
+    calc(100% - var(--px)) var(--px),
+    100% var(--px),
+    100% calc(100% - var(--px)),
+    calc(100% - var(--px)) calc(100% - var(--px)),
+    calc(100% - var(--px)) 100%,
+    var(--px) 100%,
+    var(--px) calc(100% - var(--px)),
+    0 calc(100% - var(--px)),
+    0 var(--px),
+    var(--px) var(--px)
+  );
+}
+
+/* Respect visitors who prefer less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
