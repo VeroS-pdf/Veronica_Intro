@@ -6,6 +6,7 @@ import '@fontsource/vt323/400.css';
 
 import './styles/theme.css';
 import './styles/desktop.css';
+import './styles/lock-screen.css';
 import './styles/browser.css';
 import './styles/pages.css';
 

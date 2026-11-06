@@ -7,35 +7,59 @@
 import type { ComponentType } from 'react';
 
 /**
- * Unique identifier for a browser tab / page (for example `"about"`).
- * It is only used internally to keep track of which page is showing.
+ * Unique identifier for a page (for example `"about"`).
+ * A page shows up as one browser tab; each page can only be open once.
  */
-export type TabId = string;
+export type PageId = string;
 
 /**
- * Props that the browser window passes to EVERY page component.
- * Most pages ignore them; only the welcome page needs them.
+ * Describes one page that can be shown in a browser tab.
+ * The list of pages lives in `src/pages.ts`.
  */
-export interface PageProps {
-  /** `true` once the visitor has clicked the welcome text. */
-  entered: boolean;
-  /** Call this to "enter" the site, which makes the other tabs appear. */
-  onEnter: () => void;
-}
-
-/**
- * Describes one browser tab. The list of tabs lives in `src/tabs.ts`.
- */
-export interface TabDefinition {
+export interface PageDefinition {
   /** Unique id, also used as the React key. */
-  id: TabId;
+  id: PageId;
   /** Text shown on the tab itself. */
   title: string;
   /** Fake URL path shown in the address bar, e.g. `"projects"`. */
   path: string;
-  /** The React component rendered inside the browser window for this tab. */
-  Page: ComponentType<PageProps>;
+  /** The React component rendered inside the browser window for this page. */
+  Page: ComponentType;
 }
+
+/**
+ * Describes one desktop app (an icon on the desktop and in the start menu).
+ * The list of apps lives in `src/apps.ts`.
+ */
+export interface AppDefinition {
+  /** Unique id. */
+  id: string;
+  /** Name shown under the icon. */
+  label: string;
+  /** The pixel-art icon (see `src/art/appIcons.ts`). */
+  icon: Sprite;
+  /**
+   * Pages (tabs) the app opens in a browser window. The first one is the main
+   * page: it is the one shown first, and opening the app again just brings the
+   * window that holds it to the front.
+   */
+  pages: readonly PageId[];
+}
+
+/** A position on the screen, in pixels. */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/** A width and height, in pixels. */
+export interface Size {
+  width: number;
+  height: number;
+}
+
+/** A window's position (top-left corner) and size, in pixels. */
+export interface Rect extends Point, Size {}
 
 /**
  * A pixel-art image drawn from text.

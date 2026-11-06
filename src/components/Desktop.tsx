@@ -1,75 +1,74 @@
 /**
- * Desktop: the computer "home screen" that fills the whole page.
+ * Desktop: the whole computer, filling the page.
  *
- * It stacks, from back to front:
- *   wallpaper -> scanline overlay -> desktop icon -> browser window -> taskbar
+ * Layers, from back to front:
+ *   wallpaper -> scanlines -> app icons -> windows -> taskbar -> lock screen
  *
- * This component also owns the window's state (open / minimised / closed /
- * maximised). The browser's own state (current tab, history) lives inside
- * `BrowserWindow`; closing the window unmounts it, so reopening starts fresh
- * on the welcome screen.
+ * The site starts locked. Clicking the lock screen "unlocks" it (the lock
+ * screen slides away); "Lock screen" in the start menu locks it again without
+ * closing any windows.
+ *
+ * The windows themselves are managed by `DesktopProvider`
+ * (see `src/state/DesktopProvider.tsx`).
  */
-import { useState } from 'react';
-import { BROWSER_ICON } from '../art/sprites';
-import { SITE } from '../config/siteConfig';
+import { useEffect, useState } from 'react';
+import { DesktopProvider } from '../state/DesktopProvider';
+import { useDesktop } from '../state/useDesktop';
 import { BrowserWindow } from './browser/BrowserWindow';
+import { DesktopIcons } from './DesktopIcons';
+import { LockScreen } from './LockScreen';
 import { PixelLandscape } from './PixelLandscape';
-import { PixelSprite } from './PixelSprite';
 import { Taskbar } from './Taskbar';
 
-/** Whether the browser window is showing, tucked into the taskbar, or gone. */
-export type WindowState = 'open' | 'minimized' | 'closed';
+/** `locked`: lock screen showing. `unlocking`: it is sliding away. `unlocked`: desktop is usable. */
+type LockPhase = 'locked' | 'unlocking' | 'unlocked';
 
-export function Desktop() {
-  const [windowState, setWindowState] = useState<WindowState>('open');
-  const [maximized, setMaximized] = useState(false);
-  /** Changing this key remounts the browser, replaying the welcome intro. */
-  const [session, setSession] = useState(0);
+/** How long the slide-away animation takes (keep in sync with `.lock-screen--leaving` in desktop.css). */
+const UNLOCK_ANIMATION_MS = 700;
 
-  /** Shows the browser, restoring it if it was minimised. */
-  const openBrowser = () => setWindowState('open');
+/** The desktop contents; it lives inside the provider so it can use the window manager. */
+function DesktopScreen() {
+  const { windows, workspaceRef } = useDesktop();
+  const [lockPhase, setLockPhase] = useState<LockPhase>('locked');
 
-  /** Resets the browser to the welcome screen with only one tab. */
-  const replayIntro = () => {
-    setSession((count) => count + 1);
-    setMaximized(false);
-    setWindowState('open');
-  };
+  // After the slide-away animation, remove the lock screen. With reduced motion there is no animation to wait for.
+  useEffect(() => {
+    if (lockPhase !== 'unlocking') return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const timer = window.setTimeout(() => setLockPhase('unlocked'), reducedMotion ? 0 : UNLOCK_ANIMATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [lockPhase]);
 
   return (
     <div className="desktop">
       <PixelLandscape />
       <div className="desktop__scanlines" aria-hidden="true" />
 
-      <div className="desktop__icons">
-        <button type="button" className="desktop-icon" onClick={openBrowser}>
-          <PixelSprite sprite={BROWSER_ICON} scale={2} />
-          <span>{SITE.browserName}</span>
-        </button>
+      {/* `inert` keeps keyboard focus and screen readers out of the desktop while it is locked. */}
+      <div className="desktop__layer" inert={lockPhase === 'locked'}>
+        <DesktopIcons />
+        <div className="workspace" ref={workspaceRef}>
+          {windows.map((win) => (
+            <BrowserWindow key={win.id} window={win} />
+          ))}
+        </div>
+        <Taskbar onLock={() => setLockPhase('locked')} />
       </div>
 
-      <div className={`workspace${maximized ? ' workspace--maximized' : ''}`}>
-        {windowState !== 'closed' && (
-          <BrowserWindow
-            key={session}
-            maximized={maximized}
-            hidden={windowState === 'minimized'}
-            onMinimize={() => setWindowState('minimized')}
-            onToggleMaximize={() => setMaximized((value) => !value)}
-            onClose={() => {
-              setMaximized(false);
-              setWindowState('closed');
-            }}
-          />
-        )}
-      </div>
-
-      <Taskbar
-        windowState={windowState}
-        onToggleWindow={() => setWindowState((state) => (state === 'open' ? 'minimized' : 'open'))}
-        onOpenBrowser={openBrowser}
-        onReplayIntro={replayIntro}
-      />
+      {lockPhase !== 'unlocked' && (
+        <LockScreen
+          leaving={lockPhase === 'unlocking'}
+          onUnlock={() => setLockPhase((phase) => (phase === 'locked' ? 'unlocking' : phase))}
+        />
+      )}
     </div>
+  );
+}
+
+export function Desktop() {
+  return (
+    <DesktopProvider>
+      <DesktopScreen />
+    </DesktopProvider>
   );
 }

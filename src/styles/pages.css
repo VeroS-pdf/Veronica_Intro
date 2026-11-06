@@ -1,176 +1,8 @@
 /* ==========================================================================
    pages.css: what appears inside the browser's white screen.
-   Section 1 styles the welcome screen; section 2 styles the content pages.
-   Everything here is blue on white (or pale blue).
+   Content pages (Bio, Projects, Contact, LinkedIn, GitHub): blue on white,
+   with pale blue cards.
    ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. Welcome screen
-   -------------------------------------------------------------------------- */
-
-.welcome {
-  position: relative;
-  display: grid;
-  flex: 1;
-  place-items: center;
-  min-height: calc(var(--px) * 40);
-  padding: calc(var(--px) * 6);
-  overflow: hidden;
-}
-
-/* A full-size layer behind the text that holds the stars or the dragons. */
-.sky {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-/* --- Twinkling yellow stars ------------------------------------------------ */
-
-.star {
-  position: absolute;
-  left: var(--left);
-  top: var(--top);
-  transform: translate(-50%, -50%);
-}
-
-.star .sprite {
-  animation: twinkle var(--twinkle, 2s) steps(2) infinite;
-  animation-delay: var(--delay, 0s);
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.25;
-    transform: scale(0.6);
-  }
-}
-
-/* --- Flying dragons ---------------------------------------------------------
-   DragonSky.tsx moves `.dragon` around and flips `.dragon__flipper`; the CSS
-   here only makes the wings flap by swapping between the two frames. */
-
-.dragon {
-  position: absolute;
-  left: 0;
-  top: 0;
-  will-change: transform;
-}
-
-.dragon__flipper {
-  display: grid;
-  transform: translate(-50%, -50%);
-}
-
-.dragon__frame {
-  grid-area: 1 / 1;
-}
-
-.dragon__frame--up {
-  animation: flap-up var(--flap, 0.5s) steps(1) infinite;
-}
-
-.dragon__frame--down {
-  animation: flap-down var(--flap, 0.5s) steps(1) infinite;
-}
-
-@keyframes flap-up {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes flap-down {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* With reduced motion there is no flapping, so show just one frame. */
-@media (prefers-reduced-motion: reduce) {
-  .dragon__frame--down {
-    display: none;
-  }
-}
-
-/* --- Welcome text ---------------------------------------------------------- */
-
-.welcome__center {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* The big clickable greeting. */
-.welcome__title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(var(--px) * 2);
-  padding: calc(var(--px) * 2) calc(var(--px) * 4);
-  border: 0;
-  background: transparent;
-  color: var(--blue-text);
-  font-family: var(--font-display);
-  /* `cqw` = % of the browser window's width (see `container-type` in browser.css). */
-  font-size: clamp(32px, 7.5cqw, 80px);
-  line-height: 0.95;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-shadow: var(--px) var(--px) 0 var(--blue-line);
-}
-
-/* Every line gets its own thick underline, like the reference artwork. */
-.welcome__line {
-  text-decoration: underline;
-  text-decoration-thickness: var(--px);
-  text-underline-offset: calc(var(--px) * 2);
-  text-decoration-skip-ink: none;
-}
-
-.welcome__title:hover {
-  color: var(--blue-deep);
-  transform: translateY(calc(var(--px) * -1));
-}
-
-.welcome__title:active {
-  transform: translateY(var(--px));
-}
-
-.welcome__hint {
-  margin: calc(var(--px) * 4) 0 0;
-  color: var(--blue-text);
-  font-size: 24px;
-  text-align: center;
-}
-
-.welcome__hint--blink {
-  animation: blink 1.4s steps(1) infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0.2;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   2. Content pages (About, Projects, Contact, LinkedIn)
-   -------------------------------------------------------------------------- */
 
 .page {
   display: flex;
@@ -335,4 +167,58 @@
   .facts {
     font-size: 24px;
   }
+}
+
+/* LinkedIn and GitHub profile cards */
+.profile {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--px) * 4);
+}
+
+.profile__header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 6);
+}
+
+.profile__icon {
+  flex: none;
+}
+
+.profile__subtitle {
+  margin: 0 0 calc(var(--px) * 2);
+}
+
+.profile .tags {
+  margin-top: calc(var(--px) * 2);
+}
+
+.profile .button-row {
+  margin-top: 0;
+}
+
+/* GitHub: featured repositories */
+.repo-list {
+  display: grid;
+  gap: calc(var(--px) * 3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.repo {
+  padding: calc(var(--px) * 3) calc(var(--px) * 4);
+  background: var(--white);
+  border-left: var(--px) solid var(--teal-500);
+}
+
+.repo a {
+  font-family: var(--font-display);
+  font-size: 28px;
+}
+
+.repo p {
+  margin: calc(var(--px) * 1) 0 0;
+  font-size: 24px;
 }

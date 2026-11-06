@@ -35,16 +35,27 @@
   z-index: 50;
 }
 
-/* --- Desktop icon -------------------------------------------------------- */
+/* Holds the icons, windows and taskbar so they can all be switched off while locked. */
+.desktop__layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* --- App icons ------------------------------------------------------------ */
 
 .desktop__icons {
   position: absolute;
   top: calc(var(--px) * 4);
   left: calc(var(--px) * 4);
+  bottom: calc(var(--taskbar-height) + var(--px) * 4);
   display: flex;
   flex-direction: column;
-  gap: calc(var(--px) * 4);
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: calc(var(--px) * 3);
   z-index: 1;
+  pointer-events: auto;
 }
 
 .desktop-icon {
@@ -52,7 +63,7 @@
   flex-direction: column;
   align-items: center;
   gap: calc(var(--px) * 2);
-  width: calc(var(--px) * 24);
+  width: calc(var(--px) * 26);
   padding: calc(var(--px) * 2);
   border: 0;
   background: transparent;
@@ -75,26 +86,18 @@
 
 /* --- Window area ---------------------------------------------------------- */
 
-/* Centres the browser window above the taskbar. It ignores clicks itself so
-   the desktop icon underneath stays clickable around the window. */
+/* The area windows live in: the whole screen above the taskbar. Windows are
+   positioned inside it. It ignores clicks itself so the app icons underneath
+   stay clickable around the windows. */
 .workspace {
   position: absolute;
   inset: 0 0 var(--taskbar-height) 0;
-  display: grid;
-  /* `minmax(0, 1fr)` stops the window's contents from stretching the grid past the screen. */
-  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
-  place-items: center;
-  padding: calc(var(--px) * 6);
   pointer-events: none;
   z-index: 2;
 }
 
 .workspace > * {
   pointer-events: auto;
-}
-
-.workspace--maximized {
-  padding: 0;
 }
 
 /* --- Taskbar -------------------------------------------------------------- */
@@ -111,6 +114,7 @@
   border-top: var(--px) solid var(--ink);
   box-shadow: inset 0 var(--px) 0 var(--taskbar-hi);
   z-index: 40;
+  pointer-events: auto;
 }
 
 .taskbar__button {
@@ -139,9 +143,18 @@
   font-size: 26px;
 }
 
-/* The window's button looks "pressed in" while the window is showing. */
+/* One button per open window, side by side. */
+.taskbar__tasks {
+  display: flex;
+  flex: 1;
+  gap: calc(var(--px) * 2);
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* A window's button looks "pressed in" while that window is in front. */
 .taskbar__task {
-  flex: 0 1 calc(var(--px) * 60);
+  flex: 0 1 calc(var(--px) * 50);
   min-width: 0;
 }
 
@@ -197,4 +210,10 @@
 .start-menu button:focus-visible {
   background: var(--teal-400);
   color: var(--teal-ink);
+}
+
+.start-menu__divider {
+  height: var(--px);
+  margin: var(--px) 0;
+  background: var(--taskbar-lo);
 }

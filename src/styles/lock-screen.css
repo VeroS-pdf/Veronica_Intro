@@ -1,0 +1,211 @@
+/* ==========================================================================
+   lock-screen.css: the lock screen, plus the twinkling stars and flying
+   dragons that drift across it.
+   ========================================================================== */
+
+/* --- The lock screen itself ------------------------------------------------ */
+
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--desktop-bg);
+  color: var(--white);
+  cursor: pointer;
+  animation: lock-in 0.4s steps(4) both;
+}
+
+/* It fills the whole screen, so a focus ring would just look like a border. */
+.lock-screen:focus-visible {
+  outline: none;
+}
+
+/* After a click the whole screen slides up and away, revealing the desktop. */
+.lock-screen--leaving {
+  cursor: default;
+  animation: lock-out 0.7s steps(8) forwards;
+}
+
+@keyframes lock-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lock-out {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* A soft lilac wash so the white text stays readable over the wallpaper. */
+.lock-screen__tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(205, 189, 240, 0.5),
+    rgba(205, 189, 240, 0.12) 55%,
+    rgba(205, 189, 240, 0.4)
+  );
+}
+
+.lock-screen__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--px) * 6);
+  text-align: center;
+}
+
+.lock-screen__time {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 16vw, 160px);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-shadow: calc(var(--px) * 1.5) calc(var(--px) * 1.5) 0 var(--plum-shadow);
+}
+
+.lock-screen__date {
+  margin: calc(var(--px) * 2) 0 calc(var(--px) * 10);
+  font-size: clamp(24px, 3vw, 34px);
+  text-shadow: 2px 2px 0 var(--plum-shadow);
+}
+
+/* "Welcome to Veronica's website!" with a thick underline under every line. */
+.lock-screen__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: normal;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: var(--px) var(--px) 0 var(--plum-shadow);
+}
+
+.lock-screen__line {
+  text-decoration: underline;
+  text-decoration-thickness: var(--px);
+  text-underline-offset: calc(var(--px) * 2);
+  text-decoration-skip-ink: none;
+}
+
+.lock-screen__hint {
+  margin: calc(var(--px) * 8) 0 0;
+  font-size: 30px;
+  /* Outlined on all sides so it stays readable over the dark trees too. */
+  text-shadow:
+    2px 2px 0 var(--plum-shadow),
+    -2px 2px 0 var(--plum-shadow),
+    2px -2px 0 var(--plum-shadow),
+    -2px -2px 0 var(--plum-shadow);
+  animation: blink 1.4s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* --- Sky layers: stars and dragons ------------------------------------------ */
+
+/* A full-size layer that holds the stars or the dragons. It ignores the mouse
+   so clicks fall through to whatever is underneath. */
+.sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Twinkling yellow stars */
+.star {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  transform: translate(-50%, -50%);
+}
+
+.star .sprite {
+  animation: twinkle var(--twinkle, 2s) steps(2) infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(0.6);
+  }
+}
+
+/* Flying dragons: DragonSky.tsx moves `.dragon` around and flips
+   `.dragon__flipper`; the CSS here only makes the wings flap by swapping
+   between the two frames. */
+.dragon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.dragon__flipper {
+  display: grid;
+  transform: translate(-50%, -50%);
+}
+
+.dragon__frame {
+  grid-area: 1 / 1;
+}
+
+.dragon__frame--up {
+  animation: flap-up var(--flap, 0.5s) steps(1) infinite;
+}
+
+.dragon__frame--down {
+  animation: flap-down var(--flap, 0.5s) steps(1) infinite;
+}
+
+@keyframes flap-up {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes flap-down {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* With reduced motion there is no flapping, so show just one frame. */
+@media (prefers-reduced-motion: reduce) {
+  .dragon__frame--down {
+    display: none;
+  }
+}

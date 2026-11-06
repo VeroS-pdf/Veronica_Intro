@@ -4,7 +4,7 @@
  *
  * The star positions are generated once from a fixed seed, so the sky looks
  * the same every visit. Stars never land on the centre of the screen, where
- * the welcome text lives. To change how many there are, edit `STAR_COUNT`.
+ * the clock and greeting live. To change how many there are, edit `STAR_COUNT`.
  */
 import type { CSSProperties } from 'react';
 import { STAR_BIG, STAR_SMALL, STAR_TINY } from '../art/sprites';
@@ -16,8 +16,8 @@ import { PixelSprite } from './PixelSprite';
 const STAR_COUNT = 22;
 /** Seed for the random layout; try another number for a different sky. */
 const STAR_SEED = 2024;
-/** The part of the screen (in %) kept clear for the welcome text. */
-const KEEP_CLEAR = { left: 18, right: 82, top: 32, bottom: 70 };
+/** The part of the screen (in %) kept clear for the lock screen's clock and greeting. */
+const KEEP_CLEAR = { left: 20, right: 80, top: 12, bottom: 88 };
 
 /** One star: which picture, how big, where, and how it twinkles. */
 interface Star {

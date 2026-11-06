@@ -4,7 +4,14 @@ This is a personal project I started for fun just to test out my html capabiliti
 
 ## What it is
 
-The whole site is a tiny retro computer. Visitors land on a pastel desktop with a purple pixel-art forest wallpaper (taken in the afternoon) and a teal browser window with a white screen that says **"Welcome to Veronica's website!"**, with little yellow stars twinkling and pastel purple dragons flying around behind it. Clicking the text makes the other tabs (About, Projects, Contact, LinkedIn) pop in along the top of the browser, and each tab swaps the page inside the window. Visitors can drag the window's edges or the dotted grip in its bottom-right corner to make it bigger or smaller.
+The whole site is a tiny retro computer.
+
+1. **Lock screen.** Visitors land on a lock screen (afternoon purple-forest wallpaper, a big clock, twinkling stars and pastel dragons). Clicking anywhere unlocks it.
+2. **Desktop.** A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects** and **Mail**.
+3. **Windows.** Each app opens in a teal browser window. Explorer opens my bio (with Projects and Contact tabs beside it); LinkedIn and GitHub open a profile card with a button to the real profile.
+4. **Real window behaviour.** Drag a window by its title bar, resize it by its edges or corner grip, minimise it to the taskbar, maximise it, or close it. **Drag a tab out of a window to make it its own window**, and drag a tab (or a one-tab window) onto another window's tab strip to put it back. The start menu has every app plus "Lock screen".
+
+On phone-sized screens windows simply fill the screen (dragging and resizing are off).
 
 Built with React + TypeScript + Vite.
 
@@ -22,13 +29,15 @@ npm run preview    # serves the dist/ build locally
 | I want to...                                  | Edit                                          |
 | --------------------------------------------- | --------------------------------------------- |
 | Change any text, project, email or link       | `src/config/siteConfig.ts` (search for `TODO`) |
-| Add, remove or reorder tabs                   | `src/tabs.ts`                                 |
-| Add a brand new page                          | copy `src/pages/AboutPage.tsx`, then register it in `src/tabs.ts` |
+| Add, remove or reorder desktop apps           | `src/apps.ts`                                 |
+| Add a brand new page (tab content)            | copy `src/pages/AboutPage.tsx`, then register it in `src/pages.ts` and give it an app in `src/apps.ts` |
+| Redraw an app icon (e.g. the dragon globe)    | `src/art/appIcons.ts` (icons are drawn as text) |
+| Redraw dragons, stars and small icons         | `src/art/sprites.ts`                          |
+| Change the forest wallpaper (sky, sun, trees) | `src/art/landscape.ts`                        |
+| Change the lock screen's text                 | `SITE` in `src/config/siteConfig.ts`          |
 | Change how many stars twinkle                 | `STAR_COUNT` in `src/components/TwinklingStars.tsx` |
 | Change how many dragons fly, or their size and speed | `DRAGONS` in `src/components/DragonSky.tsx` |
-| Redraw or add pixel art (dragons, stars, icons) | `src/art/sprites.ts` (pictures are drawn as text) |
-| Change the forest wallpaper (sky, sun, trees) | `src/art/landscape.ts`                        |
-| Change the smallest size the window can shrink to | `MIN_WINDOW_SIZE` in `src/components/browser/ResizeHandles.tsx` |
+| Change window sizes (default, pulled-out tab, smallest) | top of `src/state/desktopReducer.ts` |
 | Change colours, fonts or how chunky the pixels are | `src/styles/theme.css` (`--px` is one art pixel) |
 
 ## How the code is organised
@@ -37,16 +46,22 @@ npm run preview    # serves the dist/ build locally
 src/
   main.tsx                 entry point (fonts + styles)
   App.tsx                  just renders <Desktop />
-  tabs.ts                  the list of browser tabs
+  apps.ts                  the desktop apps (icon + which pages they open)
+  pages.ts                 the pages that can appear as browser tabs
   types.ts                 shared TypeScript types
   config/siteConfig.ts     all the words and links on the site
-  art/                     sprites (pixel art as text) and the wallpaper painter
-  hooks/                   browser back/forward logic, taskbar clock
-  components/              Desktop, Taskbar, PixelSprite, PixelLandscape,
-                           TwinklingStars, DragonSky
+  art/                     pixel art as text (sprites, app icons) and the wallpaper painter
+  state/                   the window manager
+    desktopReducer.ts        rules for opening, moving, closing windows and moving tabs (pure logic)
+    DesktopProvider.tsx      holds the windows and shares them with the components
+    useDesktop.ts            the hook components use to talk to the window manager
+    windowDrag.ts            dragging a window by its title bar
+    tabDrag.ts               dragging a tab out, into another window, or to reorder
+  hooks/                   the clock
+  components/              Desktop, LockScreen, DesktopIcons, Taskbar, sprites, wallpaper, stars, dragons
     browser/               the browser window: tabs, toolbar, window buttons, resize handles
-  pages/                   one component per tab
-  styles/                  theme.css, desktop.css, browser.css, pages.css
+  pages/                   one component per tab (Bio, Projects, Contact, LinkedIn, GitHub)
+  styles/                  theme.css, desktop.css, lock-screen.css, browser.css, pages.css
 ```
 
 Every file starts with a comment explaining what it does, and every component and function has a doc comment.

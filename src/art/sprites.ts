@@ -284,3 +284,18 @@ export const GRIP: Sprite = {
     't.t.t',
   ],
 };
+
+/** Padlock for the start menu's "Lock screen" item. */
+export const LOCK: Sprite = {
+  palette: PALETTE,
+  rows: [
+    '..ttt..',
+    '.t...t.',
+    '.t...t.',
+    'ttttttt',
+    'tttwttt',
+    'tttwttt',
+    'ttttttt',
+    'ttttttt',
+  ],
+};

@@ -4,12 +4,15 @@
    ========================================================================== */
 
 .window {
-  position: relative;
+  position: absolute;
+  /* BrowserWindow.tsx sets --x, --y, --w, --h and --z from the window manager. */
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  z-index: var(--z, 1);
   display: flex;
   flex-direction: column;
-  /* The default size; dragging the window's edges sets --window-width/height. */
-  width: min(var(--window-width, calc(var(--px) * 240)), 100%);
-  height: min(var(--window-height, calc(var(--px) * 160)), 100%);
   background: var(--teal-400);
   /* Pixel-stepped outline plus a soft, hard-edged drop shadow. */
   box-shadow:
@@ -21,12 +24,22 @@
   animation: window-open 0.3s steps(5) both;
 }
 
+/* Windows behind the front one look a little washed out. */
+.window--inactive .window__titlebar,
+.window--inactive .window__statusbar,
+.window--inactive .toolbar {
+  filter: saturate(0.55) brightness(1.06);
+}
+
 /* `display: flex` above would otherwise override the `hidden` attribute. */
 .window[hidden] {
   display: none;
 }
 
+/* Maximised: fill the whole desktop area, ignoring the saved position and size. */
 .window--maximized {
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
 }
@@ -82,11 +95,6 @@
     var(--px) 0 0 0 var(--ink);
 }
 
-/* A lone welcome tab is allowed to be wide enough to read the whole greeting. */
-.tab:only-child {
-  flex-basis: calc(var(--px) * 90);
-}
-
 .tab__label {
   overflow: hidden;
   white-space: nowrap;
@@ -97,6 +105,11 @@
   background: var(--teal-300);
 }
 
+/* The tab being dragged fades while its floating copy follows the pointer. */
+.tab--dragging {
+  opacity: 0.35;
+}
+
 /* The selected tab matches the toolbar and "opens into" it. */
 .tab--active {
   z-index: 2;
@@ -104,23 +117,6 @@
   margin-bottom: calc(var(--px) * -1);
   padding-bottom: var(--px);
   background: var(--teal-300);
-}
-
-/* Tabs other than the welcome tab pop in one after another once revealed. */
-.tab:not(:first-child) {
-  animation: tab-pop 0.45s steps(5) both;
-  animation-delay: calc(var(--i, 0) * 110ms);
-}
-
-@keyframes tab-pop {
-  from {
-    opacity: 0;
-    transform: translateY(calc(var(--px) * 8));
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* The three little squares in the corner. */
@@ -353,11 +349,10 @@
 /* --- Phones: the browser fills the screen and tabs scroll sideways -------- */
 
 @media (max-width: 640px) {
-  .workspace {
-    padding: 0;
-  }
-
+  /* Every window fills the screen; the front one hides the others. */
   .window {
+    left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
   }
@@ -384,10 +379,6 @@
     max-width: calc(var(--px) * 50);
   }
 
-  .tab:only-child {
-    flex-basis: auto;
-  }
-
   /* Scrolling tabs can't overlap the toolbar border, so skip the "open" effect. */
   .tab--active {
     height: calc(var(--px) * 9);
@@ -402,4 +393,57 @@
   .address-bar {
     font-size: 20px;
   }
+}
+
+/* --- Dragging windows and tabs --------------------------------------------- */
+
+@media (min-width: 641px) {
+  /* Stop touch screens from scrolling the page when dragging a title bar or tab. */
+  .window__titlebar,
+  .tab {
+    touch-action: none;
+  }
+}
+
+/* While dragging, show the grabbing hand everywhere. */
+body.is-dragging-tab,
+body.is-dragging-tab *,
+body.is-moving-window,
+body.is-moving-window * {
+  cursor: grabbing !important;
+}
+
+/* The floating preview shown while a tab is dragged (see TabDragGhost.tsx). */
+.tab-ghost {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+}
+
+.tab-ghost__window {
+  position: absolute;
+  border: var(--px) dashed var(--teal-600);
+  background: rgba(143, 217, 225, 0.28);
+}
+
+.tab-ghost__label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: calc(var(--px) * 2) calc(var(--px) * 4);
+  background: var(--teal-300);
+  color: var(--teal-ink);
+  font-size: 22px;
+  white-space: nowrap;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--ink),
+    0 var(--px) 0 0 var(--ink),
+    calc(var(--px) * -1) 0 0 0 var(--ink),
+    var(--px) 0 0 0 var(--ink);
+}
+
+/* The tab strip a dragged one-tab window would join when dropped. */
+.window__titlebar--drop-target {
+  outline: var(--px) dashed var(--teal-ink);
+  outline-offset: calc(var(--px) * -2);
 }

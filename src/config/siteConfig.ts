@@ -8,26 +8,20 @@
  * own words, links and details.
  */
 
-/** Text for the welcome screen, the browser chrome and the taskbar. */
+/** Text for the lock screen and the browser's address bar. */
 export const SITE = {
-	/** Text shown on the very first browser tab (and the page's `<title>`). */
-	welcomeTabTitle: "Welcome to Veronica's website!",
 	/**
-	 * The big clickable text on the welcome screen. Each entry is one line, and
-	 * each line gets its own underline (like the reference artwork).
+	 * The big greeting on the lock screen. Each entry is one line, and each line
+	 * gets its own underline.
 	 */
 	welcomeTitleLines: ["Welcome to", "Veronica's website!"],
-	/** Small blinking hint under the title before the visitor clicks. */
-	enterHint: "- click the text to enter -",
-	/** Hint shown after the visitor has clicked and the tabs have appeared. */
-	exploreHint: "- pick a tab up top to explore -",
-	/** Fake web address shown in the address bar; the tab's `path` is added to the end. */
+	/** Small blinking hint on the lock screen. */
+	unlockHint: "- click anywhere to unlock -",
+	/** Fake web address shown in the address bar; the page's `path` is added to the end. */
 	addressPrefix: "www.veronicas-website.web/",
-	/** Label for the browser's button on the taskbar and its desktop icon. */
-	browserName: "Veronica Explorer",
 } as const;
 
-/** "About" tab. TODO: write your own intro. */
+/** "Bio" tab: the page the Explorer app opens. */
 export const ABOUT = {
 	heading: "About me",
 	/** One string per paragraph. */
@@ -96,12 +90,44 @@ export const CONTACT = {
 	] as ContactLink[],
 };
 
-/** "LinkedIn" tab. TODO: paste your own profile URL. */
+/** "LinkedIn" app. The browser window shows this card plus a button to your real profile. */
 export const LINKEDIN = {
 	heading: "LinkedIn",
+	/** Name and headline shown on the profile card. */
+	name: "Veronica Song",
+	headline: "Healthcare consultant at SK",
+	location: "Boston",
 	blurb:
 		"Not as much of a LinkedIn warrior as I used to be but feel free to connect!",
 	/** Your LinkedIn profile address. */
 	url: "https://www.linkedin.com/in/veronica-song",
 	buttonLabel: "linkedin",
+};
+
+/** One featured repository on the GitHub page. */
+export interface Repo {
+	name: string;
+	description: string;
+	url: string;
+}
+
+/** "GitHub" app. The browser window shows this card plus a button to your real profile. */
+export const GITHUB = {
+	heading: "GitHub",
+	name: "Veronica Song",
+	username: "VeroS-pdf",
+	// TODO: tweak this blurb so it sounds like you.
+	blurb: "Peek at the code behind this website, and whatever else I'm tinkering with.",
+	/** Your GitHub profile address. */
+	url: "https://github.com/VeroS-pdf",
+	buttonLabel: "github",
+	/** Repositories to highlight. Add, remove or reword freely. */
+	repos: [
+		{
+			name: "Veronica_Intro",
+			description:
+				"This very website: a tiny pixel-art computer built with React and TypeScript.",
+			url: "https://github.com/VeroS-pdf/Veronica_Intro",
+		},
+	] as Repo[],
 };

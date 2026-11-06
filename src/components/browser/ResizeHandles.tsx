@@ -1,27 +1,22 @@
 /**
- * ResizeHandles: invisible grab areas around the browser window's edges and
- * corners, plus a dotted grip in the bottom-right corner.
+ * ResizeHandles: invisible grab areas around a window's edges and corners,
+ * plus a dotted grip in the bottom-right corner.
  *
- * Drag any edge or corner to make the window bigger or smaller. The window
- * stays centred on the desktop, so an edge follows the mouse by changing the
- * size by double the mouse's movement. The grip can also be focused and moved
+ * Drag an edge or corner to resize; the opposite edge stays where it is, like
+ * any desktop window. A window can't be dragged smaller than `MIN_WINDOW_SIZE`
+ * or out past the edges of the desktop. The grip can also be focused and moved
  * with the arrow keys.
  */
 import { useRef } from 'react';
-import type { KeyboardEvent, PointerEvent, RefObject } from 'react';
+import type { KeyboardEvent, PointerEvent } from 'react';
 import { GRIP } from '../../art/sprites';
+import { MIN_WINDOW_SIZE } from '../../state/desktopReducer';
+import { useDesktop } from '../../state/useDesktop';
+import type { Rect, Size } from '../../types';
 import { PixelSprite } from '../PixelSprite';
 
-/** Smallest the window may be, in screen pixels. */
-export const MIN_WINDOW_SIZE = { width: 360, height: 300 };
 /** How far each arrow-key press changes the size, in screen pixels. */
 const KEYBOARD_STEP = 32;
-
-/** A window size in screen pixels. */
-export interface WindowSize {
-  width: number;
-  height: number;
-}
 
 type Edge = 'n' | 'e' | 's' | 'w' | 'ne' | 'se' | 'sw' | 'nw';
 const EDGES: readonly Edge[] = ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'];
@@ -31,69 +26,60 @@ interface DragStart {
   edge: Edge;
   pointerX: number;
   pointerY: number;
-  size: WindowSize;
-  max: WindowSize;
+  rect: Rect;
+  bounds: Size;
 }
 
 interface ResizeHandlesProps {
-  /** The browser window element being resized. */
-  windowRef: RefObject<HTMLElement | null>;
-  /** Called with the new size while the visitor drags or presses arrow keys. */
-  onResize: (size: WindowSize) => void;
+  /** The window's current position and size. */
+  rect: Rect;
+  /** Called with the new position and size while the visitor drags or presses arrow keys. */
+  onResize: (rect: Rect) => void;
 }
 
 /** Keeps `value` between `min` and `max`. */
-const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+const clamp = (value: number, min: number, max: number) => Math.round(Math.min(max, Math.max(min, value)));
 
 /**
- * Reads the window's current size and the biggest size that still fits on the
- * desktop (the space its parent leaves after padding).
+ * Works out a window's new rectangle while an edge or corner is dragged.
+ *
+ * @param start The drag's starting state.
+ * @param dx How far the pointer has moved horizontally since the drag began.
+ * @param dy How far the pointer has moved vertically since the drag began.
  */
-function measure(windowEl: HTMLElement | null): { size: WindowSize; max: WindowSize } | null {
-  const parent = windowEl?.parentElement;
-  if (!windowEl || !parent) return null;
-  const style = getComputedStyle(parent);
-  return {
-    // offsetWidth/Height ignore the open animation's scaling, unlike getBoundingClientRect.
-    size: { width: windowEl.offsetWidth, height: windowEl.offsetHeight },
-    max: {
-      width: parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
-      height: parent.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom),
-    },
-  };
+function resizedRect(start: DragStart, dx: number, dy: number): Rect {
+  const { edge, rect, bounds } = start;
+  let left = rect.x;
+  let top = rect.y;
+  let right = rect.x + rect.width;
+  let bottom = rect.y + rect.height;
+
+  // The edge being dragged follows the pointer; the opposite edge stays put.
+  // A window that already pokes past the desktop edge is allowed to stay that way.
+  if (edge.includes('e')) right = clamp(right + dx, left + MIN_WINDOW_SIZE.width, Math.max(bounds.width, right));
+  if (edge.includes('w')) left = clamp(left + dx, Math.min(0, left), right - MIN_WINDOW_SIZE.width);
+  if (edge.includes('s')) bottom = clamp(bottom + dy, top + MIN_WINDOW_SIZE.height, Math.max(bounds.height, bottom));
+  if (edge.includes('n')) top = clamp(top + dy, Math.min(0, top), bottom - MIN_WINDOW_SIZE.height);
+
+  return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
-export function ResizeHandles({ windowRef, onResize }: ResizeHandlesProps) {
+export function ResizeHandles({ rect, onResize }: ResizeHandlesProps) {
+  const { getBounds } = useDesktop();
   // A ref (not a plain variable) so the drag survives the re-renders the resizing itself causes.
   const drag = useRef<DragStart | null>(null);
 
   const startDrag = (edge: Edge) => (event: PointerEvent<HTMLElement>) => {
-    const measured = measure(windowRef.current);
-    if (!measured || event.button !== 0) return;
+    if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    drag.current = { edge, pointerX: event.clientX, pointerY: event.clientY, ...measured };
+    drag.current = { edge, pointerX: event.clientX, pointerY: event.clientY, rect, bounds: getBounds() };
     event.preventDefault();
   };
 
   const moveDrag = (event: PointerEvent<HTMLElement>) => {
     const start = drag.current;
     if (!start) return;
-    // Which way each axis grows: +1 = dragging right/down grows it, -1 = left/up grows it, 0 = untouched.
-    const directionX = start.edge.includes('e') ? 1 : start.edge.includes('w') ? -1 : 0;
-    const directionY = start.edge.includes('s') ? 1 : start.edge.includes('n') ? -1 : 0;
-    // The window stays centred, so each side moves by half the size change: double the pointer's travel.
-    onResize({
-      width: clamp(
-        start.size.width + 2 * directionX * (event.clientX - start.pointerX),
-        MIN_WINDOW_SIZE.width,
-        start.max.width,
-      ),
-      height: clamp(
-        start.size.height + 2 * directionY * (event.clientY - start.pointerY),
-        MIN_WINDOW_SIZE.height,
-        start.max.height,
-      ),
-    });
+    onResize(resizedRect(start, event.clientX - start.pointerX, event.clientY - start.pointerY));
   };
 
   const endDrag = () => {
@@ -101,14 +87,14 @@ export function ResizeHandles({ windowRef, onResize }: ResizeHandlesProps) {
   };
 
   const onGripKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const measured = measure(windowRef.current);
-    if (!measured) return;
     const change = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] }[event.key];
     if (!change) return;
     event.preventDefault();
+    const bounds = getBounds();
     onResize({
-      width: clamp(measured.size.width + change[0] * KEYBOARD_STEP, MIN_WINDOW_SIZE.width, measured.max.width),
-      height: clamp(measured.size.height + change[1] * KEYBOARD_STEP, MIN_WINDOW_SIZE.height, measured.max.height),
+      ...rect,
+      width: clamp(rect.width + change[0] * KEYBOARD_STEP, MIN_WINDOW_SIZE.width, Math.max(rect.width, bounds.width - rect.x)),
+      height: clamp(rect.height + change[1] * KEYBOARD_STEP, MIN_WINDOW_SIZE.height, Math.max(rect.height, bounds.height - rect.y)),
     });
   };
 

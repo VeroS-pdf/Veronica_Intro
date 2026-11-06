@@ -1,0 +1,199 @@
+/**
+ * Desktop app icons: 28 x 28 pixel art drawn as text, like the other sprites
+ * in `sprites.ts`. Every character is one pixel and `.` is see-through.
+ *
+ * Each icon has its own small palette (the letters mean different colours from
+ * icon to icon; see the palette above each one). To redraw an icon, edit its
+ * rows. To change which icon an app uses, see `src/apps.ts`.
+ */
+import type { Sprite } from '../types';
+
+/**
+ * Explorer: a pastel purple dragon curled around a globe, in the style of the
+ * old Firefox logo (a fox around the world).
+ * `o` ocean, `O` ocean shade, `h` ocean glint, `g` land, `G` land shade,
+ * `l` dragon belly, `m` dragon body, `d` dragon outline and spines, `e` eye.
+ */
+export const ICON_EXPLORER: Sprite = {
+  palette: {
+    o: '#6fb7f2',
+    O: '#4f98e0',
+    h: '#a9d8fb',
+    g: '#a7e6c9',
+    G: '#7fcfa8',
+    l: 'var(--dragon-light)',
+    m: 'var(--dragon-mid)',
+    d: 'var(--dragon-deep)',
+    e: 'var(--dragon-eye)',
+  },
+  rows: [
+    '....................d...d...',
+    '...................ddd.ddd..',
+    '..................dddd.ddd..',
+    '......d.........ddmmmdddd...',
+    '.....dmd.....O.dmdmmmlmdd...',
+    '....dmmd.OOOOoOOmmmmmeemmd..',
+    '...dmmd.OhhhooooOOmmmmmmmmd.',
+    '.ddmmd.OhhhoooooooOmmmmmmmd.',
+    'dddmmdOhhhggooooooOmllllld..',
+    '.dmmdOhhggggggoooooOlllllmd.',
+    '.dmmdOhhggggggooooooOOmmmmd.',
+    '.dmmdOhoggggggoooooooOmmmmd.',
+    'dmmmdOooggggggooggooOOlmmmmd',
+    'dmmmOoooooggooogggGOOOlmmmmd',
+    'dmmldOoooooooogggGGGOOlmmmmd',
+    'dmmldOooooooooggGGGGOOlmmmmd',
+    'dmdmlOoooooooogGGGGGOOlmdmd.',
+    'dmmmlOooooggggGGGGGGOlmmmmdd',
+    'ddmmmlOooogggGOGGGGOOlmdmmd.',
+    '.dmdmllOooggGGOOGGOOlmmmmd..',
+    '..dmmmllOOooOOOOOOOlmmmmmd..',
+    '..dmmdmmllOOOOOOOllmmdmmdd..',
+    '..ddmmmmmmlllllllmmdmmmdd...',
+    '...ddmmmdmmmmmmmmmmmmmd.....',
+    '.....dmmmmdmmdmmdmmmmd......',
+    '.....dddmmmmmmmmmmmddd......',
+    '......d.dddmmmmmddd.d.......',
+    '..........dddddddd..........',
+  ],
+};
+
+/** LinkedIn: a pastel blue tile with a white "in". `b` tile, `B` edge, `w` white. */
+export const ICON_LINKEDIN: Sprite = {
+  palette: { b: '#78b2ec', B: '#4f8fd6', w: '#ffffff' },
+  rows: [
+    '............................',
+    '............................',
+    '...BBBBBBBBBBBBBBBBBBBBBB...',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbwwwbbbbbbbbbbbbbbB..',
+    '..BbbbbbwwwbbbbbbbbbbbbbbB..',
+    '..BbbbbbwwwbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbwwwbbwwwwwwwwbbbbB..',
+    '..BbbbbbwwwbbwwwwwwwwbbbbB..',
+    '..BbbbbbwwwbbwwwwwwwwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbwwwbbwwwbbbbwwwbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '..BbbbbbbbbbbbbbbbbbbbbbbB..',
+    '...BBBBBBBBBBBBBBBBBBBBBB...',
+    '............................',
+    '............................',
+  ],
+};
+
+/** GitHub: a cat silhouette in a plum circle. `p` circle, `P` rim, `w` cat. */
+export const ICON_GITHUB: Sprite = {
+  palette: { p: '#8a7fb8', P: '#6a5f94', w: '#f6f1ff' },
+  rows: [
+    '............................',
+    '.........PPPPPPPPP..........',
+    '.......PPpppppppppPP........',
+    '......PpppppppppppppP.......',
+    '....PPpppppppppppppppPP.....',
+    '....PpppppppppppppppppP.....',
+    '...PpppwwpppppppppwwpppP....',
+    '..PppppwwwpppppppwwwppppP...',
+    '..PppppwwwwpppppwwwwppppP...',
+    '.PpppppwwwwwwwwwwwwwpppppP..',
+    '.PpppppwwwwwwwwwwwwwpppppP..',
+    '.PpppppwwwwwwwwwwwwwpppppP..',
+    '.PppppppwwwwwwwwwwwwpppppP..',
+    '.PpppppwwwwwwwwwwwwwwppppP..',
+    '.PpppppwwwpwwwwwwpwwwppppP..',
+    '.PpppppwwwpwwwwwwpwwwppppP..',
+    '.PpppppwwwwwwwwwwwwwwppppP..',
+    '.PpppppwwwwwwppwwwwwwppppP..',
+    '..PpppppwwwwwwwwwwwwppwpP...',
+    '..PpppppwwwwwwwwwwwwppwpP...',
+    '...PppppppwwwwwwwwppwwpP....',
+    '....PppppwwwwwwwwwwpppP.....',
+    '....PPpppwwwwwwwwwwppPP.....',
+    '......PpppwwwwwwwwppP.......',
+    '.......PPpppwwwwppPP........',
+    '.........PPPPPPPPP..........',
+    '............................',
+    '............................',
+  ],
+};
+
+/** Projects: a yellow folder with a star. `y` folder, `Y` edge, `h` front panel, `w` star. */
+export const ICON_PROJECTS: Sprite = {
+  palette: { y: '#ffe27a', Y: '#d9a63a', h: '#fff0b3', w: '#ffffff' },
+  rows: [
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '...YYYYYYYYY................',
+    '...YyyyyyyyY................',
+    '...YyyyyyyyY................',
+    '...YyyyyyyyyYYYYYYYYYYYYY...',
+    '...YyyyyyyyyyyyyyyyyyyyyY...',
+    '...YyyyyyyyyyyyyyyyyyyyyY...',
+    '...YYYYYYYYYYYYYYYYYYYYYY...',
+    '...YhhhhhhhhhhhhhhhhhhhhY...',
+    '...YhhhhhhhhhwhhhhhhhhhhY...',
+    '...YhhhhhhhhwwwhhhhhhhhhY...',
+    '...YhhhhhhhwwwwwhhhhhhhhY...',
+    '...YhhhhhhhhwwwhhhhhhhhhY...',
+    '...YhhhhhhhhwhwhhhhhhhhhY...',
+    '...YhhhhhhhhhhhhhhhhhhhhY...',
+    '...YhhhhhhhhhhhhhhhhhhhhY...',
+    '...YhhhhhhhhhhhhhhhhhhhhY...',
+    '...YYYYYYYYYYYYYYYYYYYYYY...',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+  ],
+};
+
+/** Mail: an envelope with a pink seal. `w` paper, `v` outline and flap, `k` seal. */
+export const ICON_MAIL: Sprite = {
+  palette: { w: '#fdf6ff', v: '#9d82de', k: '#ffb4d9' },
+  rows: [
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '..vvvvvvvvvvvvvvvvvvvvvvvv..',
+    '..vvwwwwwwwwwwwwwwwwwwwwvv..',
+    '..vwvwwwwwwwwwwwwwwwwwwvwv..',
+    '..vwwvvwwwwwwwwwwwwwwvvwwv..',
+    '..vwwwwvwwwwwwwwwwwwvwwwwv..',
+    '..vwwwwwvwwwwwwwwwwvwwwwwv..',
+    '..vwwwwwwvwwwwwwwwvwwwwwwv..',
+    '..vwwwwwwwvwwwwwwvwwwwwwwv..',
+    '..vwwwwwwwwvkkkkvwwwwwwwwv..',
+    '..vwwwwwwwwwkkkkwwwwwwwwwv..',
+    '..vwwwwwwwwwkkkkwwwwwwwwwv..',
+    '..vwwwwwwwwwkkkkwwwwwwwwwv..',
+    '..vwwwwwwwwwwwwwwwwwwwwwwv..',
+    '..vwwwwwwwwwwwwwwwwwwwwwwv..',
+    '..vwwwwwwwwwwwwwwwwwwwwwwv..',
+    '..vvvvvvvvvvvvvvvvvvvvvvvv..',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+    '............................',
+  ],
+};

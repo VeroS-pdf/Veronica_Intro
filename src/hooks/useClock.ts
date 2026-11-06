@@ -1,12 +1,16 @@
 /**
- * useClock: returns the current time as text (e.g. "3:42 PM") for the taskbar.
- * It re-checks every 15 seconds, which is plenty for a clock without seconds.
+ * Clock hooks.
+ *
+ * `useNow` returns the current time as a `Date`, refreshed every 15 seconds
+ * (plenty for a clock without seconds). `useClock` returns it already
+ * formatted as text for the taskbar, e.g. "3:42 PM".
  */
 import { useEffect, useState } from 'react';
 
 const REFRESH_MS = 15_000;
 
-export function useClock(): string {
+/** The current date and time, kept fresh. */
+export function useNow(): Date {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -14,5 +18,10 @@ export function useClock(): string {
     return () => window.clearInterval(timer);
   }, []);
 
-  return now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return now;
+}
+
+/** The current time as short text, e.g. "3:42 PM". */
+export function useClock(): string {
+  return useNow().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
