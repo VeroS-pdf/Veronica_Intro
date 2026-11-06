@@ -6,8 +6,8 @@ This is a personal project I started for fun just to test out my html capabiliti
 
 The whole site is a tiny retro computer.
 
-1. **Lock screen.** Visitors land on a lock screen (afternoon purple-forest wallpaper, a big clock, twinkling stars and pastel dragons). Clicking anywhere unlocks it.
-2. **Desktop.** A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects** and **Mail**. The little purple dragon button on the taskbar (next to the clock) switches pastel dragons flying around the desktop on and off; they start off. While they are on, every 5 minutes there is a 10% chance that a giant, graceful purple dragon (slender and serpentine, with a long-snouted eastern-style face, branching antlers, long looping whiskers, big taloned hands and feet, iridescent wings and a wispy tail) flies in from the left, swings into a left turn toward the horizon, and flies off into the distance.
+1. **Lock screen.** Visitors land on a lock screen (afternoon purple-forest wallpaper, a big clock, twinkling stars and pastel dragons). Clicking anywhere unlocks it (except on a dragon: see below).
+2. **Desktop.** A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects** and **Mail**. The little purple dragon button on the taskbar (next to the clock) switches pastel dragons flying around the desktop on and off; they start off. The little dragons are clickable (on the lock screen too): a click makes yellow sparkles pop out, knocks the dragon back a little, and then it zooms off at high speed for about 5 seconds before calming down. While they are on, every 5 minutes there is a 10% chance that a giant, graceful purple dragon (slender and serpentine, with a long-snouted eastern-style face, branching antlers, long looping whiskers, big taloned hands and feet, iridescent wings and a wispy tail) flies in from the left, swings into a left turn toward the horizon, and flies off into the distance.
 3. **Tabs group together.** Explorer opens my bio in a teal browser window. Opening LinkedIn, GitHub, Projects or Mail adds each one as another tab in that same window (LinkedIn and GitHub show a profile card with a button to the real profile).
 4. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed. The start menu has every app plus "Lock screen".
 
@@ -37,6 +37,7 @@ npm run preview    # serves the dist/ build locally
 | Change the lock screen's text                 | `SITE` in `src/config/siteConfig.ts`          |
 | Change how many stars twinkle                 | `STAR_COUNT` in `src/components/TwinklingStars.tsx` |
 | Change how many dragons fly, or their size and speed | `DRAGONS` in `src/components/DragonSky.tsx` |
+| Change what clicking a dragon does (knock-back, speed-up time, sparkles) | `CLICK` and `SPARKLES` in `src/components/DragonSky.tsx`; sparkle look is `.sparkle` in `src/styles/lock-screen.css` |
 | Change how often the giant dragon appears (every 5 minutes, 10% chance) | top of `src/hooks/useGiantDragon.ts` |
 | Change the giant dragon's flight (where it turns, how fast, how it climbs away) | top of `src/art/giantDragon/flight.ts` |
 | Change the giant dragon's look (body, face, antlers, whiskers, claws, wings, colours) | `src/art/giantDragon/dragon.ts` and `palette.ts` |

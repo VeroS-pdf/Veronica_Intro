@@ -60,6 +60,9 @@
 .lock-screen__content {
   position: relative;
   z-index: 1;
+  /* Ignore the mouse so the dragons flying behind the text can still be clicked.
+     Clicks on the text still reach the lock screen itself, so they still unlock it. */
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -201,6 +204,60 @@
   50% {
     opacity: 1;
   }
+}
+
+/* Dragons can be clicked (see DragonSky.tsx), so their picture catches the mouse even though the
+   sky around them does not. The invisible padding makes the small dragons easier to hit.
+   With reduced motion the dragons rest and can't be clicked, so none of this applies. */
+@media (prefers-reduced-motion: no-preference) {
+  .dragon__flipper {
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .dragon__flipper::before {
+    content: '';
+    position: absolute;
+    inset: calc(var(--px) * -3);
+  }
+}
+
+/* Yellow sparkles that burst out of a clicked dragon. DragonSky.tsx moves them each frame; the CSS
+   draws one as a plus sign made of square pixels (pale in the middle, golden at the tips).
+   `--big` has longer arms, and `--dot` is a single speck. */
+.sparkle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--px);
+  height: var(--px);
+  background: #fff6c0;
+  box-shadow:
+    var(--px) 0 0 var(--yellow),
+    calc(var(--px) * -1) 0 0 var(--yellow),
+    0 var(--px) 0 var(--yellow),
+    0 calc(var(--px) * -1) 0 var(--yellow);
+  /* A hard golden edge, so the pale yellow still stands out against the sun and the pale sky. */
+  filter: drop-shadow(calc(var(--px) * 0.5) calc(var(--px) * 0.5) 0 var(--gold));
+  will-change: transform;
+}
+
+.sparkle--big {
+  box-shadow:
+    var(--px) 0 0 var(--yellow),
+    calc(var(--px) * -1) 0 0 var(--yellow),
+    0 var(--px) 0 var(--yellow),
+    0 calc(var(--px) * -1) 0 var(--yellow),
+    calc(var(--px) * 2) 0 0 var(--gold),
+    calc(var(--px) * -2) 0 0 var(--gold),
+    0 calc(var(--px) * 2) 0 var(--gold),
+    0 calc(var(--px) * -2) 0 var(--gold);
+}
+
+.sparkle--dot {
+  background: var(--yellow);
+  box-shadow: none;
 }
 
 /* With reduced motion there is no flapping, so show just one frame. */
