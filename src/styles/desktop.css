@@ -31,26 +31,13 @@
   animation: lock-in 0.5s steps(4) both;
 }
 
-/* The rare giant dragon flies in this layer: in front of the windows (so it is
-   always seen) but behind the taskbar. It ignores the mouse, so nothing underneath
-   becomes unclickable while it passes. */
-.giant-dragon-layer {
+/* Holds the desktop's twinkling stars: the area above the taskbar, above the wallpaper but behind
+   the dragons, icons and windows. The stars themselves are styled in lock-screen.css. */
+.desktop-stars {
   position: absolute;
   inset: 0 0 var(--taskbar-height) 0;
-  z-index: 30;
-  overflow: hidden;
+  z-index: 0;
   pointer-events: none;
-}
-
-/* The canvas the giant dragon is drawn on (GiantDragon.tsx). It is a small, low-resolution picture
-   stretched over the whole layer without smoothing, which is what keeps it chunky pixel art. */
-.giant-dragon-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  opacity: 0;
 }
 
 /* Very faint CRT scanlines over everything on the desktop. */
