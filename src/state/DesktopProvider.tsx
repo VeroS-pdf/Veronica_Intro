@@ -46,6 +46,7 @@ export function DesktopProvider({ children }: { children: ReactNode }) {
       openApp: (app) => dispatch({ type: 'open', pages: app.pages, bounds: getBounds() }),
       focusWindow: (id) => dispatch({ type: 'focus', id }),
       closeWindow: (id) => dispatch({ type: 'close', id }),
+      closeTab: (id, page) => dispatch({ type: 'closeTab', id, page }),
       minimizeWindow: (id) => dispatch({ type: 'minimize', id }),
       toggleMaximize: (id) => dispatch({ type: 'toggleMaximize', id }),
       setRect: (id, rect) => dispatch({ type: 'setRect', id, rect }),

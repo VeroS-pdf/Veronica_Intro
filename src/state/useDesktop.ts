@@ -27,6 +27,8 @@ export interface DesktopApi {
   openApp: (app: AppDefinition) => void;
   focusWindow: (id: string) => void;
   closeWindow: (id: string) => void;
+  /** Closes one tab of a window (the whole window if it was the last tab). */
+  closeTab: (id: string, page: PageId) => void;
   minimizeWindow: (id: string) => void;
   toggleMaximize: (id: string) => void;
   setRect: (id: string, rect: Rect) => void;

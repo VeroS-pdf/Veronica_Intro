@@ -9,7 +9,7 @@ The whole site is a tiny retro computer.
 1. **Lock screen.** Visitors land on a lock screen (afternoon purple-forest wallpaper, a big clock, twinkling stars and pastel dragons). Clicking anywhere unlocks it (except on a dragon: see below).
 2. **Desktop.** A few slow, quiet yellow stars twinkle in the sky. A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects** and **Mail**. The little purple dragon button on the taskbar (next to the clock) switches pastel dragons flying around the desktop on and off; they start off. The little dragons are clickable (on the lock screen too): a click makes yellow sparkles pop out, knocks the dragon back a little, and then it zooms off at high speed for about 5 seconds before calming down.
 3. **Tabs group together.** Explorer opens my bio in a teal browser window. Opening LinkedIn, GitHub, Projects or Mail adds each one as another tab in that same window (LinkedIn and GitHub show a profile card with a button to the real profile).
-4. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed. The start menu has every app plus "Lock screen".
+4. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. The start menu has every app plus "Lock screen".
 
 On phone-sized screens windows simply fill the screen (dragging and resizing are off).
 
@@ -54,7 +54,7 @@ src/
   config/siteConfig.ts     all the words and links on the site
   art/                     pixel art as text (sprites, app icons) and the wallpaper painter
   state/                   the window manager
-    desktopReducer.ts        rules for opening, moving, closing windows and moving tabs (pure logic)
+    desktopReducer.ts        rules for opening, moving, closing windows and opening, moving, closing tabs (pure logic)
     DesktopProvider.tsx      holds the windows and shares them with the components
     useDesktop.ts            the hook components use to talk to the window manager
     windowDrag.ts            dragging a window by its title bar

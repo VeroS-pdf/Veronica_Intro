@@ -72,7 +72,7 @@ export function insertionIndex(titlebar: HTMLElement, clientX: number, dragged: 
  * @param title The tab's text, shown on the floating label.
  */
 export function startTabDrag(
-  pointer: { clientX: number; clientY: number; pointerId: number },
+  pointer: { clientX: number; clientY: number; pointerId: number; target?: EventTarget | null },
   tabElement: HTMLElement,
   windowId: string,
   page: PageId,
@@ -83,11 +83,15 @@ export function startTabDrag(
   const startY = pointer.clientY;
   let dragging = false;
 
-  // Touch pointers are "captured" by the pressed element, which would stop us seeing what's under the finger.
-  try {
-    tabElement.releasePointerCapture(pointer.pointerId);
-  } catch {
-    // Nothing was captured; that's fine.
+  // Touch pointers are "captured" by the pressed element (a button inside the tab), which would stop us
+  // seeing what's under the finger. Let go of it, and of the tab itself in case that was the one captured.
+  for (const element of [pointer.target, tabElement]) {
+    if (!(element instanceof Element)) continue;
+    try {
+      element.releasePointerCapture(pointer.pointerId);
+    } catch {
+      // Nothing was captured; that's fine.
+    }
   }
 
   /** Finds what is under the pointer and decides where the tab would go. */

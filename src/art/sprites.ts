@@ -296,6 +296,18 @@ export const CTRL_CLOSE: Sprite = {
   ],
 };
 
+/** The small "x" on each browser tab, which closes just that tab. */
+export const TAB_CLOSE: Sprite = {
+  palette: PALETTE,
+  rows: [
+    't...t',
+    '.t.t.',
+    '..t..',
+    '.t.t.',
+    't...t',
+  ],
+};
+
 /** Dotted grip in the window's bottom-right corner that shows it can be resized. */
 export const GRIP: Sprite = {
   palette: PALETTE,

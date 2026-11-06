@@ -69,6 +69,8 @@ export type DesktopAction =
   | { type: 'open'; pages: readonly PageId[]; bounds: Size }
   | { type: 'focus'; id: string }
   | { type: 'close'; id: string }
+  /** Close one tab of a window. Closing a window's last tab closes the window too. */
+  | { type: 'closeTab'; id: string; page: PageId }
   | { type: 'minimize'; id: string }
   | { type: 'toggleMaximize'; id: string }
   | { type: 'setRect'; id: string; rect: Rect }
@@ -226,6 +228,13 @@ export function desktopReducer(state: DesktopState, action: DesktopAction): Desk
 
     case 'close':
       return { ...state, windows: state.windows.filter((win) => win.id !== action.id) };
+
+    case 'closeTab': {
+      const owner = state.windows.find((win) => win.id === action.id);
+      if (!owner || !owner.tabs.includes(action.page)) return state;
+      // `removePage` picks a neighbouring tab to show, and drops the window if that was its last tab.
+      return removePage(state, action.page);
+    }
 
     case 'minimize':
       return updateWindow(state, action.id, (win) => ({ ...win, minimized: true }));

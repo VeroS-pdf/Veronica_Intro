@@ -9,7 +9,8 @@
  *
  * What it shows (tabs, position, size, history) comes from the window manager
  * (`window` prop); all changes go back through `useDesktop()`. Tabs can be
- * dragged out into their own windows; see `src/state/tabDrag.ts`.
+ * dragged out into their own windows (see `src/state/tabDrag.ts`), and each
+ * tab has its own "x" to close it without closing the whole window.
  */
 import type { CSSProperties, MouseEvent, PointerEvent } from 'react';
 import { SITE } from '../../config/siteConfig';
@@ -46,13 +47,13 @@ export function BrowserWindow({ window: win }: BrowserWindowProps) {
 
   /** Dragging the empty part of the title bar moves the window. */
   const onTitlebarPointerDown = (event: PointerEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement).closest('button')) return; // tabs and buttons handle themselves
+    if ((event.target as HTMLElement).closest('button, .tab')) return; // tabs and buttons handle themselves
     desktop.beginWindowDrag(event, win.id);
   };
 
   /** Double-clicking the empty part of the title bar maximises or restores the window. */
   const onTitlebarDoubleClick = (event: MouseEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement).closest('button')) return;
+    if ((event.target as HTMLElement).closest('button, .tab')) return;
     desktop.toggleMaximize(win.id);
   };
 
@@ -81,6 +82,7 @@ export function BrowserWindow({ window: win }: BrowserWindowProps) {
           tabs={pages}
           activeId={win.activeTab}
           onSelect={(page) => desktop.selectTab(win.id, page)}
+          onClose={(page) => desktop.closeTab(win.id, page)}
           onTabPointerDown={onTabPointerDown}
         />
         <WindowControls

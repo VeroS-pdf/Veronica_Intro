@@ -80,14 +80,12 @@
   display: flex;
   align-items: center;
   flex: 0 1 calc(var(--px) * 50);
-  min-width: calc(var(--px) * 14);
+  min-width: calc(var(--px) * 16);
   height: calc(var(--px) * 9);
-  padding: 0 calc(var(--px) * 3);
-  border: 0;
+  padding: 0 var(--px) 0 0;
   background: var(--teal-500);
   color: var(--teal-ink);
   font-size: 22px;
-  text-align: left;
   /* Outline on the top, left and right only; the bottom joins the toolbar. */
   box-shadow:
     0 calc(var(--px) * -1) 0 0 var(--ink),
@@ -95,10 +93,46 @@
     var(--px) 0 0 0 var(--ink);
 }
 
+/* The big part of the tab: click it to show the page. */
+.tab__select {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  padding: 0 0 0 calc(var(--px) * 3);
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
 .tab__label {
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+/* The little "x" at the tab's right end: closes only this tab. */
+.tab__close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: calc(var(--px) * 5);
+  height: calc(var(--px) * 5);
+  margin-left: var(--px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.tab__close:hover,
+.tab__close:focus-visible {
+  background: var(--white);
+}
+
+.tab__close:active {
+  transform: translateY(var(--px));
 }
 
 .tab:not(.tab--active):hover {
@@ -377,6 +411,12 @@
   .tab {
     flex: 0 0 auto;
     max-width: calc(var(--px) * 50);
+  }
+
+  /* A bigger "x" so a fingertip can hit it. */
+  .tab__close {
+    width: calc(var(--px) * 8);
+    height: calc(var(--px) * 8);
   }
 
   /* Scrolling tabs can't overlap the toolbar border, so skip the "open" effect. */
