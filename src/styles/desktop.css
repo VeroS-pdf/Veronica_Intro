@@ -20,6 +20,39 @@
   image-rendering: pixelated;
 }
 
+/* Holds the flying dragons when they are switched on: the area above the taskbar,
+   above the wallpaper but behind the icons and windows. The dragons themselves
+   (and the `.sky` they fly in) are styled in lock-screen.css. */
+.desktop-sky {
+  position: absolute;
+  inset: 0 0 var(--taskbar-height) 0;
+  z-index: 0;
+  pointer-events: none;
+  animation: lock-in 0.5s steps(4) both;
+}
+
+/* The rare giant dragon flies in this layer: in front of the windows (so it is
+   always seen) but behind the taskbar. It ignores the mouse, so nothing underneath
+   becomes unclickable while it passes. */
+.giant-dragon-layer {
+  position: absolute;
+  inset: 0 0 var(--taskbar-height) 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The canvas the giant dragon is drawn on (GiantDragon.tsx). It is a small, low-resolution picture
+   stretched over the whole layer without smoothing, which is what keeps it chunky pixel art. */
+.giant-dragon-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  opacity: 0;
+}
+
 /* Very faint CRT scanlines over everything on the desktop. */
 .desktop__scanlines {
   position: absolute;
@@ -165,6 +198,24 @@
 
 .taskbar__task--active {
   background: var(--taskbar-lo);
+}
+
+/* The little dragon button: dim and flat when the dragons are off, lit up and pressed in when on. */
+.taskbar__dragons {
+  justify-content: center;
+  padding: 0 calc(var(--px) * 2);
+}
+
+.taskbar__dragons .sprite {
+  opacity: 0.55;
+}
+
+.taskbar__dragons--on {
+  background: var(--taskbar-lo);
+}
+
+.taskbar__dragons--on .sprite {
+  opacity: 1;
 }
 
 .taskbar__clock {

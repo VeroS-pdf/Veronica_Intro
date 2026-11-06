@@ -2,13 +2,14 @@
  * Taskbar: the strip along the bottom of the desktop.
  *
  * Contains a start button (which opens a menu of the apps plus "Lock screen"),
- * one button for every open window, and a clock on the right. Clicking a
- * window's button brings it to the front; clicking the front window's button
+ * one button for every open window, a little dragon button that switches the
+ * flying dragons on the desktop on and off, and a clock on the right. Clicking
+ * a window's button brings it to the front; clicking the front window's button
  * minimises it.
  */
 import { useEffect, useRef, useState } from 'react';
 import { APPS } from '../apps';
-import { BROWSER_ICON, HEART, LOCK } from '../art/sprites';
+import { BROWSER_ICON, DRAGON_ICON, HEART, LOCK } from '../art/sprites';
 import { useClock } from '../hooks/useClock';
 import { getPage } from '../pages';
 import { useDesktop } from '../state/useDesktop';
@@ -17,9 +18,13 @@ import { PixelSprite } from './PixelSprite';
 interface TaskbarProps {
   /** Called when "Lock screen" is chosen in the start menu. */
   onLock: () => void;
+  /** Whether dragons are currently flying on the desktop. */
+  dragonsOn: boolean;
+  /** Called when the dragon button is clicked. */
+  onToggleDragons: () => void;
 }
 
-export function Taskbar({ onLock }: TaskbarProps) {
+export function Taskbar({ onLock, dragonsOn, onToggleDragons }: TaskbarProps) {
   const desktop = useDesktop();
   const clock = useClock();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,6 +104,17 @@ export function Taskbar({ onLock }: TaskbarProps) {
           );
         })}
       </div>
+
+      <button
+        type="button"
+        className={`taskbar__button taskbar__dragons pixel-round${dragonsOn ? ' taskbar__dragons--on' : ''}`}
+        aria-pressed={dragonsOn}
+        aria-label="Flying dragons"
+        title={dragonsOn ? 'Flying dragons: on' : 'Flying dragons: off'}
+        onClick={onToggleDragons}
+      >
+        <PixelSprite sprite={DRAGON_ICON} scale={0.5} />
+      </button>
 
       <time className="taskbar__clock">{clock}</time>
     </footer>

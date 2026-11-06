@@ -153,6 +153,29 @@ export const DRAGON_WINGS_DOWN: Sprite = {
   ],
 };
 
+/**
+ * Tiny dragon for the taskbar's "show flying dragons" button.
+ * Same four purples as the big dragons: `l` light, `m` mid, `d` outline, `e` eye.
+ */
+export const DRAGON_ICON: Sprite = {
+  palette: DRAGON_PALETTE,
+  rows: [
+    '...d..dld.......',
+    '..dldddld..d....',
+    '...dllllldddd...',
+    '...dllllld.dddd.',
+    '....dlllld.dmemd',
+    '.....dlllddmmmmm',
+    '....ddmmmdmmmddd',
+    '.d.dmmmmmmmmmd..',
+    'dmdmmmmmmmmmmd..',
+    'dmmmmmmmmmmmd...',
+    '.dmmmmmmmmmd....',
+    '..ddddmddmd.....',
+    '......d..d......',
+  ],
+};
+
 /* ------------------------------------------------------------------------ */
 /* Desktop and browser interface                                            */
 /* ------------------------------------------------------------------------ */

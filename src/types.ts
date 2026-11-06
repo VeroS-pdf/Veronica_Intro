@@ -39,9 +39,10 @@ export interface AppDefinition {
   /** The pixel-art icon (see `src/art/appIcons.ts`). */
   icon: Sprite;
   /**
-   * Pages (tabs) the app opens in a browser window. The first one is the main
-   * page: it is the one shown first, and opening the app again just brings the
-   * window that holds it to the front.
+   * Pages (tabs) the app opens. The first one is the main page: it is the one
+   * shown first, and opening the app again just brings the window that holds
+   * it to the front. New pages join the browser window that is in front as
+   * tabs (a window is only created if none is open).
    */
   pages: readonly PageId[];
 }

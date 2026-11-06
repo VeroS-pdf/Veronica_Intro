@@ -4,6 +4,9 @@
  * out, ...). It has no React or DOM code in it, so it is easy to read and test.
  *
  * Rules worth knowing:
+ *  - Opening an app adds its page as a tab in the window that is in front, so
+ *    tabs group together on their own. A new window is only created when
+ *    nothing is open yet, or when a tab is dragged out of its window.
  *  - Each page lives in exactly one window at a time.
  *  - A window with no tabs left disappears.
  *  - Windows are stacked by `z`: the highest number is in front.
@@ -58,7 +61,11 @@ export interface DesktopState {
 export const INITIAL_DESKTOP_STATE: DesktopState = { windows: [], windowCount: 0, topZ: 0 };
 
 export type DesktopAction =
-  /** Open an app's pages, or bring forward the window that already holds the main page. */
+  /**
+   * Open an app's pages. If the main page is already open, its window comes
+   * forward. Otherwise the pages join the front window as new tabs, or open a
+   * new window when there is none.
+   */
   | { type: 'open'; pages: readonly PageId[]; bounds: Size }
   | { type: 'focus'; id: string }
   | { type: 'close'; id: string }
@@ -189,6 +196,16 @@ export function desktopReducer(state: DesktopState, action: DesktopAction): Desk
       // Some of the app's other pages may already live in other windows; only open the missing ones.
       const taken = new Set(state.windows.flatMap((win) => win.tabs));
       const tabs = action.pages.filter((page) => !taken.has(page));
+
+      // Group with what is already open: the new pages become tabs of the window in front
+      // (bringing it back up if it was minimised). Dragging a tab out is what makes a separate window.
+      const front = state.windows.reduce<WindowModel | null>((top, win) => (!top || win.z > top.z ? win : top), null);
+      if (front) {
+        return updateWindow(raise(state, front.id), front.id, (win) =>
+          showPage({ ...win, tabs: [...win.tabs, ...tabs] }, mainPage),
+        );
+      }
+
       const z = state.topZ + 1;
       const created: WindowModel = {
         id: `window-${state.windowCount + 1}`,
