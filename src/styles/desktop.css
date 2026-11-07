@@ -205,13 +205,156 @@
   opacity: 1;
 }
 
-.taskbar__clock {
+/* The clock is a button: clicking it opens the calendar. `.clock` holds both so the calendar can be placed above it. */
+.clock {
+  position: relative;
   margin-left: auto;
+}
+
+.taskbar__clock {
   padding: calc(var(--px) * 1.5) calc(var(--px) * 3);
+  border: 0;
   background: var(--taskbar-lo);
   color: var(--lilac-text);
   font-size: 22px;
   white-space: nowrap;
+}
+
+.taskbar__clock:hover,
+.taskbar__clock[aria-expanded='true'] {
+  background: var(--taskbar-hi);
+}
+
+/* --- Calendar (opens from the clock) -------------------------------------- */
+
+.calendar {
+  position: absolute;
+  bottom: calc(100% + var(--px) * 3);
+  right: 0;
+  /* Seven columns of ten art pixels, plus the padding on both sides. */
+  width: calc(var(--px) * 76);
+  padding: calc(var(--px) * 3);
+  background: var(--taskbar-hi);
+  color: var(--lilac-text);
+}
+
+/* Today's full date, set apart from the month below it by a thin line. */
+.calendar__today {
+  margin: 0 0 calc(var(--px) * 2);
+  padding-bottom: calc(var(--px) * 2);
+  border-bottom: var(--px) solid var(--taskbar-lo);
+  font-family: var(--font-display);
+  font-size: 26px;
+  text-align: center;
+}
+
+/* On phones the popup is narrower, so the longest dates ("Wednesday, September 30") need smaller text to stay on one line. */
+@media (max-width: 640px) {
+  .calendar__today {
+    font-size: 22px;
+  }
+}
+
+/* The month's name with the previous and next arrows either side. */
+.calendar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--px);
+}
+
+.calendar__month {
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.calendar__arrow {
+  display: grid;
+  place-items: center;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 7);
+  padding: 0;
+  border: 0;
+  background: var(--taskbar);
+}
+
+.calendar__arrow:hover {
+  background: var(--white);
+}
+
+.calendar__arrow:active {
+  transform: translateY(var(--px));
+}
+
+/* One column per weekday, one row per week. */
+.calendar__grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calendar__grid th {
+  padding: calc(var(--px) * 1) 0;
+  color: var(--plum-shadow);
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.calendar__grid td {
+  padding: calc(var(--px) * 0.5) 0;
+  text-align: center;
+}
+
+.calendar__day {
+  display: grid;
+  place-items: center;
+  height: calc(var(--px) * 7);
+  font-size: 22px;
+}
+
+/* Days from the month before and after, drawn faintly to fill the first and last rows. */
+.calendar__day--outside {
+  opacity: 0.4;
+}
+
+.calendar__day--today {
+  background: var(--yellow);
+  color: var(--lilac-text);
+  /* Round the corners by one art pixel, like the taskbar buttons. */
+  clip-path: polygon(
+    var(--px) 0,
+    calc(100% - var(--px)) 0,
+    calc(100% - var(--px)) var(--px),
+    100% var(--px),
+    100% calc(100% - var(--px)),
+    calc(100% - var(--px)) calc(100% - var(--px)),
+    calc(100% - var(--px)) 100%,
+    var(--px) 100%,
+    var(--px) calc(100% - var(--px)),
+    0 calc(100% - var(--px)),
+    0 var(--px),
+    var(--px) var(--px)
+  );
+}
+
+/* "Today": jumps back to the current month. Invisible (but keeps its space) when already there. */
+.calendar__reset {
+  display: block;
+  width: 100%;
+  margin-top: calc(var(--px) * 2);
+  padding: var(--px) 0;
+  border: 0;
+  background: var(--taskbar);
+  font-size: 20px;
+}
+
+.calendar__reset:hover:not(:disabled) {
+  background: var(--white);
+}
+
+.calendar__reset:disabled {
+  visibility: hidden;
 }
 
 /* --- Start menu ----------------------------------------------------------- */

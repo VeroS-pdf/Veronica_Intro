@@ -3,16 +3,18 @@
  *
  * Contains a start button (which opens a menu of the apps plus "Lock screen"),
  * one button for every open window, a little dragon button that switches the
- * flying dragons on the desktop on and off, and a clock on the right. Clicking
- * a window's button brings it to the front; clicking the front window's button
- * minimises it.
+ * flying dragons on the desktop on and off, and a clock on the right (click it
+ * for a small calendar). Clicking a window's button brings it to the front;
+ * clicking the front window's button minimises it.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { APPS } from '../apps';
 import { BROWSER_ICON, DRAGON_ICON, HEART, LOCK } from '../art/sprites';
 import { useClock } from '../hooks/useClock';
+import { useDismiss } from '../hooks/useDismiss';
 import { getPage } from '../pages';
 import { useDesktop } from '../state/useDesktop';
+import { Calendar } from './Calendar';
 import { PixelSprite } from './PixelSprite';
 
 interface TaskbarProps {
@@ -28,24 +30,14 @@ export function Taskbar({ onLock, dragonsOn, onToggleDragons }: TaskbarProps) {
   const desktop = useDesktop();
   const clock = useClock();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const startRef = useRef<HTMLDivElement>(null);
+  const clockRef = useRef<HTMLDivElement>(null);
 
-  // While the start menu is open: clicking elsewhere or pressing Escape closes it.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onPointerDown = (event: PointerEvent) => {
-      if (!startRef.current?.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false);
-    };
-    document.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [menuOpen]);
+  // While the start menu or the calendar is open: clicking elsewhere or pressing Escape closes it.
+  // (Opening one therefore closes the other, since a click on one is a click outside the other.)
+  useDismiss(menuOpen, startRef, () => setMenuOpen(false));
+  useDismiss(calendarOpen, clockRef, () => setCalendarOpen(false));
 
   /** Runs a menu action, then closes the menu. */
   const choose = (action: () => void) => () => {
@@ -116,7 +108,20 @@ export function Taskbar({ onLock, dragonsOn, onToggleDragons }: TaskbarProps) {
         <PixelSprite sprite={DRAGON_ICON} scale={0.5} />
       </button>
 
-      <time className="taskbar__clock">{clock}</time>
+      {/* The calendar comes after the button in the page so keyboard users reach the button first. */}
+      <div className="clock" ref={clockRef}>
+        <button
+          type="button"
+          className="taskbar__clock"
+          aria-haspopup="dialog"
+          aria-expanded={calendarOpen}
+          title="Show calendar"
+          onClick={() => setCalendarOpen((open) => !open)}
+        >
+          {clock}
+        </button>
+        {calendarOpen && <Calendar />}
+      </div>
     </footer>
   );
 }

@@ -239,6 +239,10 @@ export const ARROW_RIGHT: Sprite = {
   ],
 };
 
+/** Previous and next month arrows for the calendar: the toolbar arrows, recoloured to the taskbar's purple. */
+export const CALENDAR_PREV: Sprite = { palette: { t: 'var(--lilac-text)' }, rows: ARROW_LEFT.rows };
+export const CALENDAR_NEXT: Sprite = { palette: { t: 'var(--lilac-text)' }, rows: ARROW_RIGHT.rows };
+
 /** Little house for the toolbar's home button. */
 export const HOME: Sprite = {
   palette: PALETTE,
