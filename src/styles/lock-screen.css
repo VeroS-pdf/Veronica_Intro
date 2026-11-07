@@ -136,7 +136,9 @@
   pointer-events: none;
 }
 
-/* Twinkling yellow stars */
+/* Twinkling yellow stars. Each one fades smoothly in and out (only its opacity changes, which the
+   browser can animate without redrawing the pixel art). TwinklingStars.tsx moves a star to a new
+   spot every time it has fully faded out, i.e. whenever this animation starts over. */
 .star {
   position: absolute;
   left: var(--left);
@@ -145,19 +147,22 @@
 }
 
 .star .sprite {
-  animation: twinkle var(--twinkle, 2s) steps(2) infinite;
-  animation-delay: var(--delay, 0s);
+  will-change: opacity;
+  /* `both`: stay invisible during the start delay instead of flashing on. With reduced motion the
+     animation is switched off (see theme.css), so the stars simply stay put, fully visible. */
+  animation: twinkle var(--twinkle, 3s) ease-in-out var(--delay, 0s) infinite both;
 }
 
+/* Dark at both ends, with a short pause there, so the star is unseen while it changes places. */
 @keyframes twinkle {
   0%,
+  10%,
+  90%,
   100% {
-    opacity: 1;
-    transform: scale(1);
+    opacity: 0;
   }
   50% {
-    opacity: 0.25;
-    transform: scale(0.6);
+    opacity: 1;
   }
 }
 
