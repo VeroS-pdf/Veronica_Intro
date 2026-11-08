@@ -72,6 +72,47 @@ export const PROJECTS: Project[] = [
 	},
 ];
 
+/** One framed picture on the "Photos" tab. */
+export interface Photo {
+	/** Name of the piece, shown under its frame. */
+	title: string;
+	/** Optional small note under the title, such as the medium and the year. */
+	caption?: string;
+	/**
+	 * File name of the picture, from the `public/photos/` folder (for example "sunset.jpg").
+	 * Leave it out and the frame stays an empty placeholder.
+	 */
+	image?: string;
+	/**
+	 * Shape of the frame: "landscape" (wider than tall, the default), "portrait" (taller than wide)
+	 * or "square". Pick the one closest to your picture; it is trimmed a little to fit.
+	 */
+	shape?: "landscape" | "portrait" | "square";
+}
+
+/**
+ * "Photos" tab: a wall of black frames for pictures of paintings and drawings you have made.
+ *
+ * TO ADD A PICTURE
+ *  1. Copy the image file into the `public/photos/` folder.
+ *  2. Give one of the frames below an `image` with the file's name, e.g. `image: "sunset.jpg"`,
+ *     plus its real `title` and `caption`. (Add more frames by copying a whole `{ ... },` line.)
+ *
+ * TODO: replace these six placeholder frames with your own artwork.
+ */
+export const PHOTOS = {
+	heading: "Photos",
+	intro: "A few paintings and drawings I made in real life.",
+	items: [
+		{ title: "Artwork 1", caption: "TODO: medium and year", shape: "landscape" },
+		{ title: "Artwork 2", caption: "TODO: medium and year", shape: "portrait" },
+		{ title: "Artwork 3", caption: "TODO: medium and year", shape: "square" },
+		{ title: "Artwork 4", caption: "TODO: medium and year", shape: "portrait" },
+		{ title: "Artwork 5", caption: "TODO: medium and year", shape: "landscape" },
+		{ title: "Artwork 6", caption: "TODO: medium and year", shape: "square" },
+	] as Photo[],
+};
+
 /** A single "find me elsewhere" link on the Contact tab. */
 export interface ContactLink {
 	label: string;

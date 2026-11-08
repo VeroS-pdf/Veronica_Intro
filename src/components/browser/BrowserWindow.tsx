@@ -99,7 +99,7 @@ export function BrowserWindow({ window: win }: BrowserWindowProps) {
         canGoForward={win.cursor < win.history.length - 1}
         onBack={() => desktop.back(win.id)}
         onForward={() => desktop.forward(win.id)}
-        onHome={() => desktop.selectTab(win.id, win.tabs[0])}
+        onHome={() => desktop.goHome(win.id)}
       />
 
       <main className="window__viewport">

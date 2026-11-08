@@ -338,3 +338,23 @@ export const LOCK: Sprite = {
     'ttttttt',
   ],
 };
+
+/**
+ * A tiny picture (a sun over two mountains) shown inside an empty frame on the Photos page,
+ * until a real picture is added. `s` sun, `m` and `M` the mountains.
+ */
+export const PICTURE_PLACEHOLDER: Sprite = {
+  palette: { s: 'var(--yellow)', m: 'var(--blue-line)', M: 'var(--blue-soft)' },
+  rows: [
+    '..........ss..',
+    '.........ssss.',
+    '..........ss..',
+    '.....m........',
+    '....mmm...M...',
+    '...mmmmm.MMM..',
+    '..mmmmmmMMMMM.',
+    '.mmmmmmmMMMMMM',
+    'mmmmmmmmMMMMMM',
+  ],
+};
+

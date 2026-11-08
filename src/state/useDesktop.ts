@@ -33,6 +33,8 @@ export interface DesktopApi {
   toggleMaximize: (id: string) => void;
   setRect: (id: string, rect: Rect) => void;
   selectTab: (id: string, page: PageId) => void;
+  /** Shows the Home page (the mushroom house) in a window: the browser's Home button. */
+  goHome: (id: string) => void;
   back: (id: string) => void;
   forward: (id: string) => void;
   /** Call when the mouse goes down on a tab of a window that has several tabs. */

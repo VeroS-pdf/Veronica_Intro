@@ -10,7 +10,7 @@ import { useMemo, useReducer, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { TabDragGhost } from '../components/TabDragGhost';
 import type { GhostSetter } from '../components/TabDragGhost';
-import { getPage } from '../pages';
+import { HOME_PAGE_ID, getPage } from '../pages';
 import type { Size } from '../types';
 import { INITIAL_DESKTOP_STATE, desktopReducer, getActiveWindowId } from './desktopReducer';
 import { startTabDrag } from './tabDrag';
@@ -51,6 +51,7 @@ export function DesktopProvider({ children }: { children: ReactNode }) {
       toggleMaximize: (id) => dispatch({ type: 'toggleMaximize', id }),
       setRect: (id, rect) => dispatch({ type: 'setRect', id, rect }),
       selectTab: (id, page) => dispatch({ type: 'selectTab', id, page }),
+      goHome: (id) => dispatch({ type: 'goTo', id, page: HOME_PAGE_ID }),
       back: (id) => dispatch({ type: 'back', id }),
       forward: (id) => dispatch({ type: 'forward', id }),
 

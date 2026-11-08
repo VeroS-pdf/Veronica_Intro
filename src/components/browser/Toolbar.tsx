@@ -1,5 +1,6 @@
 /**
  * Toolbar: the browser's navigation row (back, forward, home and address bar).
+ * The home button shows the Home page: a little mushroom house in a bright forest.
  */
 import { ARROW_LEFT, ARROW_RIGHT, HOME } from '../../art/sprites';
 import { PixelSprite } from '../PixelSprite';

@@ -7,9 +7,11 @@ This is a personal project I started for fun just to test out my html capabiliti
 The whole site is a tiny retro computer.
 
 1. **Lock screen.** Visitors land on a lock screen (afternoon purple-forest wallpaper, a big clock, twinkling stars and pastel dragons). Clicking anywhere unlocks it (except on a dragon: see below).
-2. **Desktop.** A few slow, quiet yellow stars fade in and out of the sky, each reappearing in a new spot. A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects** and **Mail**. The little purple dragon button on the taskbar (next to the clock) switches pastel dragons flying around the desktop on and off; they start off. The little dragons are clickable (on the lock screen too): a click makes yellow sparkles pop out, knocks the dragon back a little, and then it zooms off at high speed for about 5 seconds before calming down.
+2. **Desktop.** A few slow, quiet yellow stars fade in and out of the sky, each reappearing in a new spot. A row of app icons: **Explorer** (a pixel dragon curled around a globe), **LinkedIn**, **GitHub**, **Projects**, **Photos** (a pixel camera with roses growing around it) and **Mail**. The little purple dragon button on the taskbar (next to the clock) switches pastel dragons flying around the desktop on and off; they start off. The little dragons are clickable (on the lock screen too): a click makes yellow sparkles pop out, knocks the dragon back a little, and then it zooms off at high speed for about 5 seconds before calming down.
 3. **Tabs group together.** Explorer opens my bio in a teal browser window. Opening LinkedIn, GitHub, Projects or Mail adds each one as another tab in that same window (LinkedIn and GitHub show a profile card with a button to the real profile).
-4. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. The start menu has every app plus "Lock screen". **Click the time in the corner for a small calendar** with today highlighted and arrows to page between months (click elsewhere or press Escape to close it).
+4. **Photos.** The Photos app opens a gallery wall of simple black frames for pictures of paintings and drawings I've made in real life. Until a picture is added, each frame is an empty placeholder.
+5. **Home button.** The little house button in the browser's toolbar opens a Home tab: a tiny mushroom house with a red spotted cap, a round door, window boxes and a smoking chimney, in a bright sunny forest. (Pressing it again just shows that tab; if Home is already open in another window, that window comes forward.) The picture is painted by code and reshapes itself to fit the window.
+6. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. The start menu has every app plus "Lock screen". **Click the time in the corner for a small calendar** with today highlighted and arrows to page between months (click elsewhere or press Escape to close it).
 
 On phone-sized screens windows simply fill the screen (dragging and resizing are off).
 
@@ -31,9 +33,11 @@ npm run preview    # serves the dist/ build locally
 | Change any text, project, email or link       | `src/config/siteConfig.ts` (search for `TODO`) |
 | Add, remove or reorder desktop apps (and which page each opens) | `src/apps.ts`               |
 | Add a brand new page (tab content)            | copy `src/pages/AboutPage.tsx`, then register it in `src/pages.ts` and give it an app in `src/apps.ts` |
+| Add my paintings and drawings to the Photos app | copy the pictures into `public/photos/`, then fill in the frames in `PHOTOS` in `src/config/siteConfig.ts` (set each frame's `image`, `title`, `caption` and `shape`) |
 | Redraw an app icon (e.g. the dragon globe)    | `src/art/appIcons.ts` (icons are drawn as text) |
 | Redraw dragons, stars and small icons         | `src/art/sprites.ts`                          |
 | Change the forest wallpaper (sky, sun, trees) | `src/art/landscape.ts`                        |
+| Redraw the Home button's mushroom house (colours, house, trees, smoke) | `src/art/mushroomHome.ts` (it is painted by code; `COLORS` at the top, the house in `paintMushroomHouse`) |
 | Change the lock screen's text                 | `SITE` in `src/config/siteConfig.ts`          |
 | Change how many stars twinkle on the lock screen | `STAR_COUNT` in `src/components/TwinklingStars.tsx` |
 | Change how many stars twinkle on the desktop, and how slowly | `DESKTOP_STARS` in `src/components/Desktop.tsx` |
@@ -54,7 +58,7 @@ src/
   pages.ts                 the pages that can appear as browser tabs
   types.ts                 shared TypeScript types
   config/siteConfig.ts     all the words and links on the site
-  art/                     pixel art as text (sprites, app icons) and the wallpaper painter
+  art/                     pixel art as text (sprites, app icons) and the wallpaper and mushroom-house painters
   state/                   the window manager
     desktopReducer.ts        rules for opening, moving, closing windows and opening, moving, closing tabs (pure logic)
     DesktopProvider.tsx      holds the windows and shares them with the components
@@ -64,7 +68,7 @@ src/
   hooks/                   the clock, and closing popups when you click away
   components/              Desktop, LockScreen, DesktopIcons, Taskbar, calendar, sprites, wallpaper, stars, dragons
     browser/               the browser window: tabs, toolbar, window buttons, resize handles
-  pages/                   one component per tab (Bio, Projects, Contact, LinkedIn, GitHub)
+  pages/                   one component per tab (Bio, Projects, Photos, Contact, LinkedIn, GitHub, and the Home page the Home button opens)
   styles/                  theme.css, desktop.css, lock-screen.css, browser.css, pages.css
 ```
 

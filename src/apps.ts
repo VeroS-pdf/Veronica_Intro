@@ -10,7 +10,7 @@
  * adds its page as a tab in the browser window that is already open (or opens
  * a window if none is); visitors drag a tab out to give it a window of its own.
  */
-import { ICON_EXPLORER, ICON_GITHUB, ICON_LINKEDIN, ICON_MAIL, ICON_PROJECTS } from './art/appIcons';
+import { ICON_EXPLORER, ICON_GITHUB, ICON_LINKEDIN, ICON_MAIL, ICON_PHOTOS, ICON_PROJECTS } from './art/appIcons';
 import type { AppDefinition } from './types';
 
 export const APPS: readonly AppDefinition[] = [
@@ -19,5 +19,6 @@ export const APPS: readonly AppDefinition[] = [
   { id: 'linkedin', label: 'LinkedIn', icon: ICON_LINKEDIN, pages: ['linkedin'] },
   { id: 'github', label: 'GitHub', icon: ICON_GITHUB, pages: ['github'] },
   { id: 'projects', label: 'Projects', icon: ICON_PROJECTS, pages: ['projects'] },
+  { id: 'photos', label: 'Photos', icon: ICON_PHOTOS, pages: ['photos'] },
   { id: 'mail', label: 'Mail', icon: ICON_MAIL, pages: ['contact'] },
 ];

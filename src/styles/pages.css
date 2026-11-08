@@ -198,6 +198,104 @@
   margin-top: 0;
 }
 
+/* Home: the mushroom house picture fills the whole browser screen (HomePage.tsx paints it onto the canvas). */
+.home {
+  position: relative;
+  flex: 1 0 auto;
+  min-height: calc(var(--px) * 90);
+  overflow: hidden;
+}
+
+.home__scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* Photos: a wall of simple black frames. Each holds a picture (or an empty placeholder). */
+.gallery__intro {
+  margin: 0;
+  color: var(--blue-text);
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.gallery {
+  --frame-black: #14111d;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--px) * 56), 1fr));
+  align-items: start;
+  gap: calc(var(--px) * 10) calc(var(--px) * 9);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.frame {
+  margin: 0;
+}
+
+/* The picture area, with a plain black frame around it (the border) and the same lilac shadow as the cards. */
+.frame__picture {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: calc(var(--px) * 2) solid var(--frame-black);
+  background: var(--blue-pale);
+  box-shadow: calc(var(--px) * 3) calc(var(--px) * 3) 0 0 var(--lilac-shadow);
+}
+
+/* The picture area's shape. A real picture is trimmed a little to fit it. */
+.gallery__item--landscape .frame__picture {
+  aspect-ratio: 4 / 3;
+}
+
+.gallery__item--portrait .frame__picture {
+  aspect-ratio: 3 / 4;
+}
+
+.gallery__item--square .frame__picture {
+  aspect-ratio: 1 / 1;
+}
+
+.frame__picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The placeholder: a little pixel picture and a note, until a real picture is added. */
+.frame__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  color: var(--blue-soft);
+  font-size: 22px;
+}
+
+.frame figcaption {
+  margin-top: calc(var(--px) * 5);
+}
+
+.frame__title {
+  margin: 0;
+  color: var(--blue-deep);
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.frame__note {
+  margin: calc(var(--px) * 1) 0 0;
+  color: var(--blue-text);
+  font-size: 22px;
+}
+
 /* GitHub: featured repositories */
 .repo-list {
   display: grid;

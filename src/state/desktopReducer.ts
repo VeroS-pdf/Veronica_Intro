@@ -8,6 +8,7 @@
  *    tabs group together on their own. A new window is only created when
  *    nothing is open yet, or when a tab is dragged out of its window.
  *  - Each page lives in exactly one window at a time.
+ *  - The browser's Home button (`goTo`) shows the Home page in that window, adding it as a tab if needed.
  *  - A window with no tabs left disappears.
  *  - Windows are stacked by `z`: the highest number is in front.
  *  - All positions are in pixels, measured from the top-left of the desktop
@@ -68,6 +69,12 @@ export type DesktopAction =
    */
   | { type: 'open'; pages: readonly PageId[]; bounds: Size }
   | { type: 'focus'; id: string }
+  /**
+   * Show a page in window `id` (what the browser's Home button does). If the window already has
+   * the page as a tab, that tab is shown. If another window has it, that window comes forward
+   * instead (a page lives in one window only). Otherwise it is added as a new tab here.
+   */
+  | { type: 'goTo'; id: string; page: PageId }
   | { type: 'close'; id: string }
   /** Close one tab of a window. Closing a window's last tab closes the window too. */
   | { type: 'closeTab'; id: string; page: PageId }
@@ -225,6 +232,18 @@ export function desktopReducer(state: DesktopState, action: DesktopAction): Desk
 
     case 'focus':
       return raise(state, action.id);
+
+    case 'goTo': {
+      const here = state.windows.find((win) => win.id === action.id);
+      if (!here) return state;
+      const owner = state.windows.find((win) => win.tabs.includes(action.page));
+      if (owner && owner.id !== here.id) {
+        return updateWindow(raise(state, owner.id), owner.id, (win) => showPage(win, action.page));
+      }
+      return updateWindow(state, here.id, (win) =>
+        showPage(owner ? win : { ...win, tabs: [...win.tabs, action.page] }, action.page),
+      );
+    }
 
     case 'close':
       return { ...state, windows: state.windows.filter((win) => win.id !== action.id) };
