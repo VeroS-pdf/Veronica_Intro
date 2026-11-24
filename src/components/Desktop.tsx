@@ -17,6 +17,7 @@
  * (see `src/state/DesktopProvider.tsx`).
  */
 import { useEffect, useState } from 'react';
+import { getPage } from '../pages';
 import { DesktopProvider } from '../state/DesktopProvider';
 import { useDesktop } from '../state/useDesktop';
 import { BrowserWindow } from './browser/BrowserWindow';
@@ -49,6 +50,9 @@ function DesktopScreen() {
   /** Whether dragons are flying around the desktop (toggled from the taskbar). */
   const [dragonsOn, setDragonsOn] = useState(false);
 
+  // A page that needs a crisp screen (the resume's PDF) switches the faint scanlines off while it is visible in any window.
+  const crispScreen = windows.some((win) => !win.minimized && getPage(win.activeTab).clearScreen);
+
   // After the slide-away animation, remove the lock screen. With reduced motion there is no animation to wait for.
   useEffect(() => {
     if (lockPhase !== 'unlocking') return;
@@ -73,7 +77,7 @@ function DesktopScreen() {
         </div>
       )}
 
-      <div className="desktop__scanlines" aria-hidden="true" />
+      <div className={`desktop__scanlines${crispScreen ? ' desktop__scanlines--off' : ''}`} aria-hidden="true" />
 
       {/* `inert` keeps keyboard focus and screen readers out of the desktop while it is locked. */}
       <div className="desktop__layer" inert={lockPhase === 'locked'}>

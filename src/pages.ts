@@ -19,6 +19,7 @@ import { HomePage } from './pages/HomePage';
 import { LinkedInPage } from './pages/LinkedInPage';
 import { PhotosPage } from './pages/PhotosPage';
 import { ProjectsPage } from './pages/ProjectsPage';
+import { ResumePage } from './pages/ResumePage';
 import type { PageDefinition, PageId } from './types';
 
 /** The page the browser's Home button shows: a mushroom house in a bright forest. */
@@ -28,6 +29,7 @@ export const PAGES: readonly PageDefinition[] = [
   { id: 'about', title: 'Bio', path: 'bio', Page: AboutPage },
   { id: 'projects', title: 'Projects', path: 'projects', Page: ProjectsPage },
   { id: 'photos', title: 'Photos', path: 'photos', Page: PhotosPage },
+  { id: 'resume', title: 'Resume', path: 'resume', Page: ResumePage, clearScreen: true },
   { id: 'contact', title: 'Contact', path: 'contact', Page: ContactPage },
   { id: 'linkedin', title: 'LinkedIn', path: 'linkedin', Page: LinkedInPage },
   { id: 'github', title: 'GitHub', path: 'github', Page: GitHubPage },

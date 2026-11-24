@@ -55,6 +55,11 @@
   z-index: 50;
 }
 
+/* Switched off while a page that needs a crisp screen (the resume PDF) is showing. */
+.desktop__scanlines--off {
+  display: none;
+}
+
 /* Holds the icons, windows and taskbar so they can all be switched off while locked. */
 .desktop__layer {
   position: absolute;

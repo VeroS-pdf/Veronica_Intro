@@ -25,6 +25,11 @@ export interface PageDefinition {
   path: string;
   /** The React component rendered inside the browser window for this page. */
   Page: ComponentType;
+  /**
+   * Set this for a page that needs a crisp, clean screen (such as an embedded PDF): while it is showing,
+   * the desktop's faint CRT scanlines are switched off so no lines cross it.
+   */
+  clearScreen?: boolean;
 }
 
 /**

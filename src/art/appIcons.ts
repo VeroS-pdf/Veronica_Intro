@@ -263,3 +263,53 @@ export const ICON_PHOTOS: Sprite = {
     '....G.......................',
   ],
 };
+
+/**
+ * Resume: a mint-green folder stuffed with papers (one leaning left, one right, one upright with writing).
+ * `m` back of the folder, `g` / `G` / `h` front, shade and highlight, `e` folder edge,
+ * `w` / `p` paper and its shade, `o` paper edge, `l` / `n` lines of writing and the bold name line.
+ */
+export const ICON_RESUME: Sprite = {
+  palette: {
+    m: '#5fc79b',
+    e: '#368f6d',
+    g: '#9ce9c6',
+    G: '#6fcfa2',
+    h: '#c9f6e0',
+    w: '#ffffff',
+    p: '#e8eefc',
+    o: '#8fa0cc',
+    l: '#a7b9ea',
+    n: '#5d7ed2',
+  },
+  rows: [
+    '............................',
+    '............................',
+    '........ooooooooooooo.......',
+    '........owwwwwwwwwwpo.......',
+    '........ownnnnnnnwwpooooooo.',
+    '..ooooooownnnnnnnwwpowwwwpo.',
+    '..owwwwwowwwwwwwwwwpowwwwpo.',
+    '...owwwwowllllwwwwwpowwwpo..',
+    '...owlllowwwwwwwwwwpowwwpo..',
+    '...owwwwowlllllllllpowwwpo..',
+    '...owlllowwwwwwwwwwpowwpo...',
+    '....owwwowllllllllwpowwpo...',
+    '...eowllowwwwwwwwwwpowwpo...',
+    '....eeeeeeeeeeeeeeeeeeee....',
+    '...ehhhhhhhhhhhhhhhhhhhhe...',
+    '...egggggggggggggggggggge...',
+    '...egggggggggggggggggggge...',
+    '...eggggoooooooooooogggge...',
+    '...eggggownnnnnnnnwogggge...',
+    '...eggggowlllllwwwwogggge...',
+    '...eggggoooooooooooogggge...',
+    '...egggggggggggggggggggge...',
+    '...egggggggggggggggggggge...',
+    '...eGGGGGGGGGGGGGGGGGGGGe...',
+    '....eeeeeeeeeeeeeeeeeeee....',
+    '............................',
+    '............................',
+    '............................',
+  ],
+};

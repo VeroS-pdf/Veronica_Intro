@@ -113,6 +113,22 @@ export const PHOTOS = {
 	] as Photo[],
 };
 
+/**
+ * "Resume" tab: shows your resume PDF inside the browser window. "Open full size" expands it to fill
+ * the whole screen (close it with the close button or Escape), and "download" saves the file.
+ *
+ * TO UPDATE IT: replace the PDF in the `public/resume/` folder (keep the same file name, or change
+ * `file` below to match the new one).
+ */
+export const RESUME = {
+	heading: "Resume",
+	/** File name of the PDF inside the `public/resume/` folder. */
+	file: "Veronica-Resume-2026.pdf",
+	openLabel: "open full size",
+	downloadLabel: "download",
+	closeLabel: "close",
+};
+
 /** A single "find me elsewhere" link on the Contact tab. */
 export interface ContactLink {
 	label: string;

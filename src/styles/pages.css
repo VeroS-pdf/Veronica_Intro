@@ -131,6 +131,7 @@
 .pixel-button {
   display: inline-block;
   padding: calc(var(--px) * 2) calc(var(--px) * 5);
+  border: 0;
   background: var(--teal-400);
   color: var(--teal-ink);
   font-family: var(--font-display);
@@ -196,6 +197,138 @@
 
 .profile .button-row {
   margin-top: 0;
+}
+
+/* Resume: a slim bar (title and buttons), then the whole page of the resume as a preview. The page scrolls
+   if the window is short. Clicking the preview (or "open full size") opens the full-screen reader below. */
+.resume {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(var(--px) * 5);
+  padding: calc(var(--px) * 4) calc(var(--px) * 5) calc(var(--px) * 8);
+}
+
+.resume__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 3) calc(var(--px) * 6);
+}
+
+.resume__title {
+  margin: 0;
+  color: var(--blue-text);
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-shadow: var(--px) var(--px) 0 var(--blue-line);
+}
+
+.resume__title span {
+  text-decoration: underline;
+  text-decoration-thickness: var(--px);
+  text-underline-offset: calc(var(--px) * 2);
+  text-decoration-skip-ink: none;
+}
+
+.resume__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--px) * 4);
+}
+
+/* The preview is the shape of a sheet of letter paper, so the whole page fits with nothing to scroll inside it. */
+.resume__preview {
+  position: relative;
+  align-self: center;
+  width: min(100%, calc(var(--px) * 150));
+  aspect-ratio: 8.5 / 11;
+  border: var(--px) solid var(--blue-soft);
+  background: var(--blue-pale);
+  box-shadow: calc(var(--px) * 3) calc(var(--px) * 3) 0 0 var(--lilac-shadow);
+}
+
+.resume__pdf {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A see-through button over the preview: the PDF viewer would otherwise swallow clicks and mouse-wheel scrolling. */
+.resume__preview-button {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.resume__preview-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.resume__hint {
+  margin: calc(var(--px) * -2) 0 0;
+  color: var(--blue-soft);
+  font-size: 22px;
+  text-align: center;
+}
+
+.resume__fallback {
+  margin: 0;
+  padding: calc(var(--px) * 6);
+  color: var(--blue-text);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+/* The full-screen reader: the PDF and its own toolbar, over everything (even the taskbar). It is a child of the page,
+   not of the browser window, so it uses the whole screen. */
+.resume-full {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  background: #2d2750;
+}
+
+.resume-full__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--px) * 4);
+  padding: calc(var(--px) * 3) calc(var(--px) * 5);
+  border-bottom: var(--px) solid var(--ink);
+  background: var(--teal-200);
+}
+
+.resume-full__title {
+  margin: 0;
+  color: var(--teal-ink);
+  font-family: var(--font-display);
+  font-size: 32px;
+  text-transform: uppercase;
+}
+
+.resume-full__buttons {
+  display: flex;
+  gap: calc(var(--px) * 4);
+}
+
+.resume-full__pdf {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background: #525659;
 }
 
 /* Home: the mushroom house picture fills the whole browser screen (HomePage.tsx paints it onto the canvas). */
