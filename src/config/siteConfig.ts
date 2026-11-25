@@ -95,10 +95,10 @@ export interface Photo {
  *
  * TO ADD A PICTURE
  *  1. Copy the image file into the `public/photos/` folder.
- *  2. Give one of the frames below an `image` with the file's name, e.g. `image: "sunset.jpg"`,
- *     plus its real `title` and `caption`. (Add more frames by copying a whole `{ ... },` line.)
+ *  2. Add a frame below by copying a whole `{ ... },` line, then set its `image` to the file's name,
+ *     e.g. `image: "sunset.jpg"`, plus its real `title` (and, if you like, a `caption` and a `shape`).
  *
- * TODO: replace the two placeholder frames (the ones called "Artwork 5" and "Artwork 6") with your own artwork.
+ * TO REMOVE A PICTURE: delete its whole `{ ... },` line.
  */
 export const PHOTOS = {
 	heading: "Photos",
@@ -108,8 +108,6 @@ export const PHOTOS = {
 		{ title: "Quest for Navi in gouache", image: "quest-for-navi.jpg", shape: "landscape" },
 		{ title: "Hollow king in gouache", image: "hollow-king.jpg", shape: "landscape" },
 		{ title: "Beary nice sunrise in gouache", image: "beary-nice-sunrise.jpg", shape: "landscape" },
-		{ title: "Artwork 5", caption: "TODO: medium and year", shape: "landscape" },
-		{ title: "Artwork 6", caption: "TODO: medium and year", shape: "square" },
 	] as Photo[],
 };
 
