@@ -6,6 +6,13 @@
  * retro look. A seeded random generator is used, so the same seed always paints
  * the same forest and the same clouds.
  *
+ * The picture is built to survive being repainted at a different width: every tree,
+ * cloud and wave of the ridge is placed relative to the CENTRE of the canvas and has
+ * its own little random generator, so making the screen wider or narrower just
+ * reveals or hides forest at the two edges instead of reshuffling everything. That
+ * is what lets the wallpaper be repainted on every frame of a window resize and
+ * still look like one steady picture being resized.
+ *
  * Want a different mood? Edit `COLORS` for the palette, or `FOREST_LAYERS` to
  * add, remove, or reshape rows of trees.
  */
@@ -22,7 +29,6 @@ const COLORS = {
   cloudShade: '#e1d6f5',
   ridge: '#c9b4ee',
   mist: '#f4dcef',
-  ground: '#553c93',
 } as const;
 
 /** Colours for one row of trees. `light` is the sun-lit edge, `dark` the shaded edge. */
@@ -74,6 +80,26 @@ const FOREST_LAYERS: readonly ForestLayer[] = [
 /** Big trees that frame the left and right edges of the screen. */
 const FRAME_TREES: TreeColors = { body: '#5f43a0', light: '#7c60bd', dark: '#4d3489' };
 
+/**
+ * Where the big framing trees stand: how far in from the left or right edge of the screen (in canvas
+ * pixels) and how tall they are (as a fraction of the canvas height). They stay glued to the edges
+ * however wide the screen gets.
+ */
+const FRAME_TREE_SPOTS: readonly { side: 'left' | 'right'; inset: number; heightFraction: number }[] = [
+  { side: 'left', inset: 9, heightFraction: 0.85 },
+  { side: 'left', inset: 29, heightFraction: 0.55 },
+  { side: 'right', inset: 9, heightFraction: 0.78 },
+  { side: 'right', inset: 29, heightFraction: 0.5 },
+];
+
+/** How much ordinary trees may stick out past the screen edge and still be drawn (so they slide into view smoothly). */
+const TREE_EDGE_MARGIN = 24;
+
+/** Clouds sit in evenly spaced slots (one cloud per slot, nudged a little) counted out from the centre of the sky. */
+const CLOUD_SPACING = 70;
+/** Enough slots to cover the widest wallpaper canvas (480 pixels) plus a cloud's own width. */
+const CLOUD_SLOTS = 9;
+
 /** 4x4 Bayer matrix: gives the checkerboard-style dithering used by old games. */
 const BAYER_4 = [
   [0, 8, 2, 10],
@@ -81,6 +107,18 @@ const BAYER_4 = [
   [3, 11, 1, 9],
   [15, 7, 13, 5],
 ] as const;
+
+/** The sky colours as red/green/blue numbers, so the sky can be written straight into the canvas's pixel data. */
+const SKY_RGB: readonly (readonly [number, number, number])[] = COLORS.sky.map((hex) => [
+  parseInt(hex.slice(1, 3), 16),
+  parseInt(hex.slice(3, 5), 16),
+  parseInt(hex.slice(5, 7), 16),
+]);
+
+/** Position within the 4-pixel dither pattern; works for negative numbers too. */
+function ditherIndex(n: number): number {
+  return ((Math.round(n) % 4) + 4) % 4;
+}
 
 /** Paints a single pixel. Coordinates are rounded so nothing gets anti-aliased. */
 function pixel(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void {
@@ -104,19 +142,39 @@ function rect(
 /**
  * Paints the afternoon sky as dithered colour bands from the top down to `horizonY`.
  * Between two bands, pixels alternate in a checkerboard pattern for a soft gradient.
+ *
+ * The sky is written straight into the canvas's pixel data (one go) rather than pixel by pixel,
+ * because it covers the whole canvas and has to be quick enough to redraw while a window is resized.
+ * The checkerboard is lined up with the centre `cx`, so it doesn't shimmer when the width changes.
  */
-function paintSky(ctx: CanvasRenderingContext2D, width: number, height: number, horizonY: number): void {
-  const bands = COLORS.sky;
+function paintSky(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  horizonY: number,
+  cx: number,
+): void {
+  const image = ctx.createImageData(width, height);
+  const data = image.data;
+  const column = Array.from({ length: width }, (_, x) => ditherIndex(x - cx));
+  const last = SKY_RGB.length - 1;
+
+  let i = 0;
   for (let y = 0; y < height; y++) {
-    const t = Math.min(1, y / horizonY) * (bands.length - 1);
+    const t = Math.min(1, y / horizonY) * last;
     const lower = Math.floor(t);
-    const upper = Math.min(bands.length - 1, lower + 1);
+    const upper = Math.min(last, lower + 1);
     const mix = t - lower;
+    const bayerRow = BAYER_4[y % 4];
     for (let x = 0; x < width; x++) {
-      const threshold = BAYER_4[y % 4][x % 4] / 16;
-      pixel(ctx, x, y, mix > threshold ? bands[upper] : bands[lower]);
+      const [r, g, b] = mix > bayerRow[column[x]] / 16 ? SKY_RGB[upper] : SKY_RGB[lower];
+      data[i++] = r;
+      data[i++] = g;
+      data[i++] = b;
+      data[i++] = 255;
     }
   }
+  ctx.putImageData(image, 0, 0);
 }
 
 /** Paints the sun with a dithered glow and a thin warm rim. */
@@ -129,7 +187,7 @@ function paintSun(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius:
         pixel(ctx, x, y, distance > radius - 1.2 ? COLORS.sunRim : COLORS.sun);
       } else if (distance <= radius + glow) {
         const strength = 1 - (distance - radius) / glow;
-        if (BAYER_4[((y % 4) + 4) % 4][((x % 4) + 4) % 4] / 16 < strength * 0.55) {
+        if (BAYER_4[ditherIndex(y - cy)][ditherIndex(x - cx)] / 16 < strength * 0.55) {
           pixel(ctx, x, y, COLORS.sunGlow);
         }
       }
@@ -168,43 +226,64 @@ function paintCloud(
   }
 }
 
-/** Scatters a handful of clouds across the upper sky. */
+/**
+ * Scatters clouds across the upper sky. Each cloud belongs to a numbered slot counted out from the
+ * centre and gets its own random generator, so a given cloud always looks the same and stays in the
+ * same place relative to the centre, whatever the width of the canvas.
+ */
 function paintClouds(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  rand: () => number,
+  cx: number,
+  seed: number,
 ): void {
-  const count = Math.max(3, Math.round(width / 70));
-  for (let i = 0; i < count; i++) {
+  for (let slot = 0; slot < CLOUD_SLOTS; slot++) {
+    const rand = createRandom(seed * 1000 + 100 + slot);
     const cloudWidth = 28 + rand() * 28;
-    paintCloud(ctx, rand() * width, height * (0.1 + rand() * 0.28), cloudWidth, rand);
+    const x = cx + (slot - (CLOUD_SLOTS - 1) / 2) * CLOUD_SPACING + (rand() - 0.5) * CLOUD_SPACING * 0.9;
+    const baseY = height * (0.1 + rand() * 0.28);
+    // Clouds that are completely off-screen aren't worth drawing.
+    if (x + cloudWidth / 2 + 4 < 0 || x - cloudWidth / 2 - 4 > width) continue;
+    paintCloud(ctx, Math.round(x), baseY, cloudWidth, rand);
   }
 }
 
-/** Paints a wavy mountain ridge that fills everything beneath it. */
+/**
+ * Paints a wavy mountain ridge that fills everything beneath it. The waves are measured from the
+ * centre `cx`, so the same hills stay put when the width changes.
+ */
 function paintRidge(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
   baseY: number,
-  rand: () => number,
+  cx: number,
+  seed: number,
 ): void {
+  const rand = createRandom(seed * 1000 + 50);
   const phaseA = rand() * Math.PI * 2;
   const phaseB = rand() * Math.PI * 2;
   for (let x = 0; x < width; x++) {
-    const y = baseY + Math.sin(x * 0.045 + phaseA) * 7 + Math.sin(x * 0.13 + phaseB) * 3;
+    const along = x - cx;
+    const y = baseY + Math.sin(along * 0.045 + phaseA) * 7 + Math.sin(along * 0.13 + phaseB) * 3;
     rect(ctx, x, y, 1, height - y, COLORS.ridge);
   }
 }
 
 /** Paints a dithered band of mist that gets denser towards its bottom edge. */
-function paintMist(ctx: CanvasRenderingContext2D, width: number, topY: number, thickness: number): void {
+function paintMist(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  topY: number,
+  thickness: number,
+  cx: number,
+): void {
   for (let row = 0; row < thickness; row++) {
     const density = (row / thickness) * 0.85;
+    const y = topY + row;
     for (let x = 0; x < width; x++) {
-      const y = topY + row;
-      if (BAYER_4[y % 4][x % 4] / 16 < density) pixel(ctx, x, y, COLORS.mist);
+      if (BAYER_4[ditherIndex(y)][ditherIndex(x - cx)] / 16 < density) pixel(ctx, x, y, COLORS.mist);
     }
   }
 }
@@ -250,6 +329,38 @@ function paintPine(
 }
 
 /**
+ * Decides where one row of trees stands and how tall each one is, as distances from the centre.
+ *
+ * Trees are planted outwards from the middle, to the right and then to the left, each side with its
+ * own random generator. Because a side's sequence of gaps and heights never depends on how far it
+ * is asked to go, a wider canvas gets exactly the same trees as a narrower one plus a few more at
+ * the ends. Returned left to right.
+ */
+function plantTrees(
+  layer: ForestLayer,
+  layerIndex: number,
+  seed: number,
+  halfWidth: number,
+): { offset: number; height: number }[] {
+  const [minH, maxH] = layer.heightRange;
+  const [minGap, maxGap] = layer.gapRange;
+  const reach = halfWidth + TREE_EDGE_MARGIN;
+  const trees: { offset: number; height: number }[] = [];
+
+  ([1, -1] as const).forEach((direction, sideIndex) => {
+    const rand = createRandom(seed * 1000 + layerIndex * 2 + sideIndex);
+    const nextGap = () => minGap + rand() * (maxGap - minGap);
+    let offset = direction === 1 ? 0 : -nextGap();
+    while (Math.abs(offset) <= reach) {
+      trees.push({ offset, height: minH + rand() * (maxH - minH) });
+      offset += direction * nextGap();
+    }
+  });
+
+  return trees.sort((a, b) => a.offset - b.offset);
+}
+
+/**
  * Paints one row of trees across the whole width, plus the solid ground
  * underneath it so that no sky shows through below the trunks.
  */
@@ -258,19 +369,18 @@ function paintForest(
   width: number,
   height: number,
   layer: ForestLayer,
-  rand: () => number,
+  layerIndex: number,
+  cx: number,
+  seed: number,
 ): void {
   const baseY = Math.round(layer.baseY * height);
-  const [minH, maxH] = layer.heightRange;
-  const [minGap, maxGap] = layer.gapRange;
 
   // A few pixels of "undergrowth" above the feet fill the gaps between trunks.
   const undergrowth = 4;
   rect(ctx, 0, baseY - undergrowth, width, height - baseY + undergrowth, layer.colors.body);
 
-  for (let x = -3; x < width + 3; x += minGap + rand() * (maxGap - minGap)) {
-    const treeHeight = minH + rand() * (maxH - minH);
-    paintPine(ctx, x, baseY, treeHeight, layer.colors);
+  for (const tree of plantTrees(layer, layerIndex, seed, width / 2)) {
+    paintPine(ctx, cx + tree.offset, baseY, tree.height, layer.colors);
   }
 }
 
@@ -278,7 +388,7 @@ function paintForest(
  * Paints the complete landscape onto a canvas.
  *
  * @param ctx 2D drawing context of the (small) canvas.
- * @param width Canvas width in pixels.
+ * @param width Canvas width in pixels. An even number keeps the centre on a whole pixel.
  * @param height Canvas height in pixels.
  * @param seed Changes the cloud and tree placement.
  */
@@ -288,25 +398,26 @@ export function paintLandscape(
   height: number,
   seed = 7,
 ): void {
-  const rand = createRandom(seed);
+  /** The middle of the canvas: trees, clouds and hills are all placed relative to this. */
+  const cx = Math.round(width / 2);
   const horizonY = Math.round(height * 0.55);
 
-  paintSky(ctx, width, height, horizonY);
+  paintSky(ctx, width, height, horizonY, cx);
   paintSun(ctx, Math.round(width * 0.8), Math.round(height * 0.2), Math.max(9, Math.round(height * 0.075)));
-  paintClouds(ctx, width, height, rand);
-  paintRidge(ctx, width, height, Math.round(height * 0.55), rand);
+  paintClouds(ctx, width, height, cx, seed);
+  paintRidge(ctx, width, height, Math.round(height * 0.55), cx, seed);
 
-  FOREST_LAYERS.forEach((layer) => {
-    paintForest(ctx, width, height, layer, rand);
+  FOREST_LAYERS.forEach((layer, index) => {
+    paintForest(ctx, width, height, layer, index, cx, seed);
     if (layer.mist) {
-      paintMist(ctx, width, Math.round(layer.baseY * height) - 6, 14);
+      paintMist(ctx, width, Math.round(layer.baseY * height) - 6, 14, cx);
     }
   });
 
-  // Solid ground plus a few big trees framing the left and right edges.
-  rect(ctx, 0, Math.round(height * 0.93), width, height, COLORS.ground);
-  paintPine(ctx, Math.round(width * 0.03), height + 8, height * 0.85, FRAME_TREES);
-  paintPine(ctx, Math.round(width * 0.1), height + 8, height * 0.55, FRAME_TREES);
-  paintPine(ctx, Math.round(width * 0.97), height + 8, height * 0.78, FRAME_TREES);
-  paintPine(ctx, Math.round(width * 0.9), height + 8, height * 0.5, FRAME_TREES);
+  // A few big trees framing the left and right edges. (There is no separate strip of ground along the bottom: the
+  // nearest row of trees already fills everything down to the bottom edge.)
+  for (const spot of FRAME_TREE_SPOTS) {
+    const x = spot.side === 'left' ? spot.inset : width - spot.inset;
+    paintPine(ctx, x, height + 8, height * spot.heightFraction, FRAME_TREES);
+  }
 }

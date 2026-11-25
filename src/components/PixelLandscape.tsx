@@ -5,8 +5,14 @@
  * and stretched to fill the screen without smoothing (`image-rendering:
  * pixelated` in `desktop.css`). The canvas width follows the screen's aspect
  * ratio, so the picture is never cropped awkwardly on phones or ultrawide monitors.
+ *
+ * Resizing: the picture is repainted at the new width on the very same frame the
+ * screen changes size, so the old picture is never left stretched to the wrong
+ * shape (which is what looked like "zooming in and then readjusting"). The painter
+ * keeps the forest steady between widths, so while the window is dragged the trees
+ * just slide in and out at the edges.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { paintLandscape } from '../art/landscape';
 
 /** Height of the wallpaper canvas in art pixels. Lower = chunkier pixels. */
@@ -15,35 +21,43 @@ const CANVAS_HEIGHT = 180;
 const MIN_WIDTH = 100;
 const MAX_WIDTH = 480;
 
-/** Canvas width that matches the current window's aspect ratio. */
-function canvasWidthForWindow(): number {
-  const aspect = window.innerWidth / Math.max(1, window.innerHeight);
-  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Math.round(CANVAS_HEIGHT * aspect)));
+/**
+ * The canvas width (in art pixels) that matches a screen of the given size. It is rounded to an even
+ * number so the centre of the picture, which everything is placed around, sits on a whole pixel.
+ */
+function canvasWidthFor(screenWidth: number, screenHeight: number): number {
+  const wanted = (CANVAS_HEIGHT * screenWidth) / Math.max(1, screenHeight);
+  const even = Math.round(wanted / 2) * 2;
+  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, even));
 }
 
 export function PixelLandscape() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [width, setWidth] = useState(canvasWidthForWindow);
 
-  // Re-measure when the window is resized (debounced so dragging stays smooth).
-  useEffect(() => {
-    let timer: number | undefined;
-    const onResize = () => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => setWidth(canvasWidthForWindow()), 150);
+  // Paint before the first frame is shown, then repaint whenever the canvas's own size changes.
+  // (A ResizeObserver runs after the page is laid out but before it is drawn, in the same frame,
+  // so there is never a frame showing the old picture at the new size. Changing the canvas's width
+  // clears it, which is why it is only changed when the width really is different.)
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    let paintedWidth = 0;
+    const fitToScreen = () => {
+      const width = canvasWidthFor(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
+      if (width === paintedWidth) return;
+      paintedWidth = width;
+      canvas.width = width;
+      paintLandscape(ctx, width, CANVAS_HEIGHT);
     };
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener('resize', onResize);
-    };
+
+    fitToScreen();
+    const observer = new ResizeObserver(fitToScreen);
+    observer.observe(canvas);
+    return () => observer.disconnect();
   }, []);
 
-  // Repaint whenever the canvas size changes (changing `width` clears the canvas).
-  useEffect(() => {
-    const ctx = canvasRef.current?.getContext('2d');
-    if (ctx) paintLandscape(ctx, width, CANVAS_HEIGHT);
-  }, [width]);
-
-  return <canvas ref={canvasRef} className="wallpaper" width={width} height={CANVAS_HEIGHT} aria-hidden="true" />;
+  // No `width` here on purpose: the effect above sets it, and React must not reset it on a re-render.
+  return <canvas ref={canvasRef} className="wallpaper" height={CANVAS_HEIGHT} aria-hidden="true" />;
 }
