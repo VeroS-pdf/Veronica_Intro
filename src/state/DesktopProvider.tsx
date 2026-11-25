@@ -6,7 +6,7 @@
  * `beginTabDrag` with every component through `useDesktop()`
  * (see `useDesktop.ts`).
  */
-import { useMemo, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { TabDragGhost } from '../components/TabDragGhost';
 import type { GhostSetter } from '../components/TabDragGhost';
@@ -23,6 +23,17 @@ export function DesktopProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(desktopReducer, INITIAL_DESKTOP_STATE);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const ghostSetter = useRef<GhostSetter | null>(null);
+
+  // Tell the window manager whenever the desktop area changes size, so every window grows or shrinks with the screen.
+  useEffect(() => {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    const report = () => dispatch({ type: 'resizeScreen', bounds: { width: workspace.clientWidth, height: workspace.clientHeight } });
+    report();
+    const observer = new ResizeObserver(report);
+    observer.observe(workspace);
+    return () => observer.disconnect();
+  }, []);
 
   // Drag handlers run long after the render that created them, so they read the newest state from here.
   const latest = useRef(state);

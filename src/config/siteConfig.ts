@@ -98,14 +98,14 @@ export interface Photo {
  *  2. Give one of the frames below an `image` with the file's name, e.g. `image: "sunset.jpg"`,
  *     plus its real `title` and `caption`. (Add more frames by copying a whole `{ ... },` line.)
  *
- * TODO: replace these six placeholder frames with your own artwork.
+ * TODO: replace the five placeholder frames (the ones called "Artwork 2" to "Artwork 6") with your own artwork.
  */
 export const PHOTOS = {
 	heading: "Photos",
 	intro: "A few paintings and drawings I made in real life.",
 	items: [
-		{ title: "Artwork 1", caption: "TODO: medium and year", shape: "landscape" },
-		{ title: "Artwork 2", caption: "TODO: medium and year", shape: "portrait" },
+		{ title: "Persimmons in acrylic marker", image: "persimmons.jpg", shape: "portrait" },
+		{ title: "Artwork 2", caption: "TODO: medium and year", shape: "landscape" },
 		{ title: "Artwork 3", caption: "TODO: medium and year", shape: "square" },
 		{ title: "Artwork 4", caption: "TODO: medium and year", shape: "portrait" },
 		{ title: "Artwork 5", caption: "TODO: medium and year", shape: "landscape" },
@@ -135,16 +135,26 @@ export interface ContactLink {
 	url: string;
 }
 
-/** "Contact" tab. TODO: use your real email and links. */
+/** "Contact" tab (the Mail app). */
 export const CONTACT = {
 	heading: "Contact",
 	intro: "feel free to reach out!",
-	/** Shown as a `mailto:` link. */
+	/** Shown as a `mailto:` link, and the "email" button opens a new email to it. */
 	email: "veronicasong1@gmail.com",
-	/** Extra links, shown as buttons. */
-	links: [
-		{ label: "GitHub", url: "https://github.com/VeroS-pdf" },
-	] as ContactLink[],
+	/** Text on the email button. */
+	emailButtonLabel: "email",
+	/**
+	 * Shown after the email button is pressed. A `mailto:` link only does something visible if the visitor's computer
+	 * has an email app set up, so this makes sure they can always reach you: it says what to do, shows your address,
+	 * and offers a button that writes the email in Gmail.
+	 */
+	emailHelp: {
+		copied: "I copied my address to your clipboard. If your email app didn't open, just paste it into a new message:",
+		notCopied: "If your email app didn't open, just write to me at:",
+		gmailLabel: "write it in gmail",
+	},
+	/** Extra links, shown as buttons after the email button (none for now: GitHub and LinkedIn have their own apps). */
+	links: [] as ContactLink[],
 };
 
 /** "LinkedIn" app. The browser window shows this card plus a button to your real profile. */

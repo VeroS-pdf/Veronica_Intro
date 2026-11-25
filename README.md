@@ -12,7 +12,7 @@ The whole site is a tiny retro computer.
 4. **Photos.** The Photos app opens a gallery wall of simple black frames for pictures of paintings and drawings I've made in real life. Until a picture is added, each frame is an empty placeholder.
 5. **Resume.** The Resume app (a green folder stuffed with papers) opens a Resume tab showing the whole page of my resume PDF right inside the browser window. Click the page, or press **open full size**, and the resume fills the whole screen at a readable size (close button or Esc to return); **download** saves the file. The desktop's faint scanlines are switched off while the resume is showing so no lines cross it.
 6. **Home button.** The little house button in the browser's toolbar opens a Home tab: a tiny mushroom house with a red spotted cap, a round door, window boxes and a smoking chimney, in a bright sunny forest. (Pressing it again just shows that tab; if Home is already open in another window, that window comes forward.) The picture is painted by code and reshapes itself to fit the window.
-7. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. The start menu has every app plus "Lock screen". **Click the time in the corner for a small calendar** with today highlighted and arrows to page between months (click elsewhere or press Escape to close it).
+7. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. Windows follow the screen too: they open at a share of the screen's size, and if you resize your browser window every window grows or shrinks with it (and stays on screen). The start menu has every app plus "Lock screen". **Click the time in the corner for a small calendar** with today highlighted and arrows to page between months (click elsewhere or press Escape to close it).
 
 On phone-sized screens windows simply fill the screen (dragging and resizing are off).
 
@@ -32,6 +32,7 @@ npm run preview    # serves the dist/ build locally
 | I want to...                                  | Edit                                          |
 | --------------------------------------------- | --------------------------------------------- |
 | Change any text, project, email or link       | `src/config/siteConfig.ts` (search for `TODO`) |
+| Change my email address, the email button, or the help note it shows | `CONTACT` in `src/config/siteConfig.ts` (the button opens the visitor's email app; pressing it also copies my address and shows a note with a "write it in gmail" button, for people with no email app set up) |
 | Add, remove or reorder desktop apps (and which page each opens) | `src/apps.ts`               |
 | Add a brand new page (tab content)            | copy `src/pages/AboutPage.tsx`, then register it in `src/pages.ts` and give it an app in `src/apps.ts` |
 | Update my resume | replace the PDF in `public/resume/` (keep the file name, or change `file` in `RESUME` in `src/config/siteConfig.ts`) |
@@ -47,7 +48,7 @@ npm run preview    # serves the dist/ build locally
 | Make calendar weeks start on Monday instead of Sunday | `WEEK_STARTS_ON` in `src/components/Calendar.tsx` |
 | Change how many dragons fly, or their size and speed | `DRAGONS` in `src/components/DragonSky.tsx` |
 | Change what clicking a dragon does (knock-back, speed-up time, sparkles) | `CLICK` and `SPARKLES` in `src/components/DragonSky.tsx`; sparkle look is `.sparkle` in `src/styles/lock-screen.css` |
-| Change window sizes (default, pulled-out tab, smallest) | top of `src/state/desktopReducer.ts` |
+| Change window sizes (the share of the screen a new window takes, the biggest it opens, the smallest) | top of `src/state/desktopReducer.ts` |
 | Change colours, fonts or how chunky the pixels are | `src/styles/theme.css` (`--px` is one art pixel) |
 
 ## How the code is organised

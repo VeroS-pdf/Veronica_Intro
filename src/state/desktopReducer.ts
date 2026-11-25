@@ -13,15 +13,23 @@
  *  - Windows are stacked by `z`: the highest number is in front.
  *  - All positions are in pixels, measured from the top-left of the desktop
  *    area (the screen above the taskbar).
+ *  - When the screen changes size, every window grows or shrinks with it (see
+ *    `resizeScreen`), and new windows are sized as a share of the screen.
  */
 import type { PageId, Point, Rect, Size } from '../types';
+import { PHONE_MAX_WIDTH } from './viewport';
 
 /** Smallest a window may be, in screen pixels. */
 export const MIN_WINDOW_SIZE: Size = { width: 360, height: 300 };
-/** Size of a window opened from an app icon (shrunk to fit small screens). */
-const DEFAULT_WINDOW_SIZE: Size = { width: 880, height: 600 };
-/** Size of a window created by dragging a tab out of another window. */
-const DETACHED_WINDOW_SIZE: Size = { width: 620, height: 460 };
+/**
+ * How big a window opened from an app icon is, as a share of the desktop area (so it suits any screen),
+ * and the biggest it starts out. The shares match a window of 880 x 600 on a 1280 x 756 desktop area.
+ */
+const DEFAULT_WINDOW_SHARE = { width: 880 / 1280, height: 600 / 756 };
+const DEFAULT_WINDOW_MAX: Size = { width: 1400, height: 900 };
+/** The same for a window created by dragging a tab out of another window. */
+const DETACHED_WINDOW_SHARE = { width: 620 / 1280, height: 460 / 756 };
+const DETACHED_WINDOW_MAX: Size = { width: 1000, height: 700 };
 /** Gap kept between a new window and the screen edge. */
 const SCREEN_MARGIN = 48;
 /** How much of a window must stay on screen, so it can always be grabbed again. */
@@ -57,9 +65,11 @@ export interface DesktopState {
   windowCount: number;
   /** The highest `z` handed out so far. */
   topZ: number;
+  /** Size of the desktop area when it was last measured (0 x 0 until the first measurement). */
+  bounds: Size;
 }
 
-export const INITIAL_DESKTOP_STATE: DesktopState = { windows: [], windowCount: 0, topZ: 0 };
+export const INITIAL_DESKTOP_STATE: DesktopState = { windows: [], windowCount: 0, topZ: 0, bounds: { width: 0, height: 0 } };
 
 export type DesktopAction =
   /**
@@ -69,6 +79,8 @@ export type DesktopAction =
    */
   | { type: 'open'; pages: readonly PageId[]; bounds: Size }
   | { type: 'focus'; id: string }
+  /** The desktop area changed size (the browser window was resized, a phone turned, ...): windows follow. */
+  | { type: 'resizeScreen'; bounds: Size }
   /**
    * Show a page in window `id` (what the browser's Home button does). If the window already has
    * the page as a tab, that tab is shown. If another window has it, that window comes forward
@@ -108,10 +120,15 @@ export function clampRect(rect: Rect, bounds: Size): Rect {
   };
 }
 
+/** A window's position and size scaled by `sx` sideways and `sy` up and down (not yet rounded or kept on screen). */
+function scaleRect(rect: Rect, sx: number, sy: number): Rect {
+  return { x: rect.x * sx, y: rect.y * sy, width: rect.width * sx, height: rect.height * sy };
+}
+
 /** Where a window opened from an app icon goes: centred, then cascaded down and right. */
 function openRect(bounds: Size, openWindowCount: number): Rect {
-  const width = Math.min(DEFAULT_WINDOW_SIZE.width, bounds.width - SCREEN_MARGIN);
-  const height = Math.min(DEFAULT_WINDOW_SIZE.height, bounds.height - SCREEN_MARGIN);
+  const width = Math.min(Math.round(bounds.width * DEFAULT_WINDOW_SHARE.width), DEFAULT_WINDOW_MAX.width, bounds.width - SCREEN_MARGIN);
+  const height = Math.min(Math.round(bounds.height * DEFAULT_WINDOW_SHARE.height), DEFAULT_WINDOW_MAX.height, bounds.height - SCREEN_MARGIN);
   const offset = (openWindowCount % 5) * CASCADE_STEP;
   return clampRect(
     { width, height, x: (bounds.width - width) / 2 + offset, y: (bounds.height - height) / 2 + offset },
@@ -127,8 +144,8 @@ function openRect(bounds: Size, openWindowCount: number): Rect {
  * @param bounds Size of the desktop area.
  */
 export function detachedRect(at: Point, bounds: Size): Rect {
-  const width = Math.min(DETACHED_WINDOW_SIZE.width, bounds.width - SCREEN_MARGIN);
-  const height = Math.min(DETACHED_WINDOW_SIZE.height, bounds.height - SCREEN_MARGIN);
+  const width = Math.min(Math.round(bounds.width * DETACHED_WINDOW_SHARE.width), DETACHED_WINDOW_MAX.width, bounds.width - SCREEN_MARGIN);
+  const height = Math.min(Math.round(bounds.height * DETACHED_WINDOW_SHARE.height), DETACHED_WINDOW_MAX.height, bounds.height - SCREEN_MARGIN);
   // Keep the whole window on screen, even when dropped near an edge.
   return clampRect(
     {
@@ -227,11 +244,33 @@ export function desktopReducer(state: DesktopState, action: DesktopAction): Desk
         minimized: false,
         maximized: false,
       };
-      return { windows: [...state.windows, created], windowCount: state.windowCount + 1, topZ: z };
+      return { ...state, windows: [...state.windows, created], windowCount: state.windowCount + 1, topZ: z };
     }
 
     case 'focus':
       return raise(state, action.id);
+
+    case 'resizeScreen': {
+      const after = action.bounds;
+      if (after.width <= 0 || after.height <= 0) return state; // not visible right now: nothing to fit to
+      // A phone-sized screen shows every window full screen whatever its saved size, so leave the windows (and the
+      // remembered desktop size) alone until the screen is desktop-sized again.
+      if (after.width <= PHONE_MAX_WIDTH) return state;
+      const before = state.bounds;
+      if (before.width === after.width && before.height === after.height) return state;
+      if (before.width <= 0 || before.height <= 0) {
+        // The first desktop-sized measurement: nothing to scale from, but make sure every window is on screen.
+        return { ...state, bounds: after, windows: state.windows.map((win) => ({ ...win, rect: clampRect(win.rect, after) })) };
+      }
+      // Every window keeps its share of the screen: the same relative position and size, kept on screen and not too small.
+      const sx = after.width / before.width;
+      const sy = after.height / before.height;
+      return {
+        ...state,
+        bounds: after,
+        windows: state.windows.map((win) => ({ ...win, rect: clampRect(scaleRect(win.rect, sx, sy), after) })),
+      };
+    }
 
     case 'goTo': {
       const here = state.windows.find((win) => win.id === action.id);
@@ -324,7 +363,7 @@ export function desktopReducer(state: DesktopState, action: DesktopAction): Desk
         maximized: false,
       };
       const without = removePage(state, action.page);
-      return { windows: [...without.windows, created], windowCount: state.windowCount + 1, topZ: z };
+      return { ...without, windows: [...without.windows, created], windowCount: state.windowCount + 1, topZ: z };
     }
   }
 }
