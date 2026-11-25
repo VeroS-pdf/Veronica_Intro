@@ -98,16 +98,16 @@ export interface Photo {
  *  2. Give one of the frames below an `image` with the file's name, e.g. `image: "sunset.jpg"`,
  *     plus its real `title` and `caption`. (Add more frames by copying a whole `{ ... },` line.)
  *
- * TODO: replace the five placeholder frames (the ones called "Artwork 2" to "Artwork 6") with your own artwork.
+ * TODO: replace the two placeholder frames (the ones called "Artwork 5" and "Artwork 6") with your own artwork.
  */
 export const PHOTOS = {
 	heading: "Photos",
 	intro: "A few paintings and drawings I made in real life.",
 	items: [
 		{ title: "Persimmons in acrylic marker", image: "persimmons.jpg", shape: "portrait" },
-		{ title: "Artwork 2", caption: "TODO: medium and year", shape: "landscape" },
-		{ title: "Artwork 3", caption: "TODO: medium and year", shape: "square" },
-		{ title: "Artwork 4", caption: "TODO: medium and year", shape: "portrait" },
+		{ title: "Quest for Navi in gouache", image: "quest-for-navi.jpg", shape: "landscape" },
+		{ title: "Hollow king in gouache", image: "hollow-king.jpg", shape: "landscape" },
+		{ title: "Beary nice sunrise in gouache", image: "beary-nice-sunrise.jpg", shape: "landscape" },
 		{ title: "Artwork 5", caption: "TODO: medium and year", shape: "landscape" },
 		{ title: "Artwork 6", caption: "TODO: medium and year", shape: "square" },
 	] as Photo[],
