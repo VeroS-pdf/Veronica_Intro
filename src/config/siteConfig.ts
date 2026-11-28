@@ -104,10 +104,26 @@ export const PHOTOS = {
 	heading: "Photos",
 	intro: "A few paintings and drawings I made in real life.",
 	items: [
-		{ title: "Persimmons in acrylic marker", image: "persimmons.jpg", shape: "portrait" },
-		{ title: "Quest for Navi in gouache", image: "quest-for-navi.jpg", shape: "landscape" },
-		{ title: "Hollow king in gouache", image: "hollow-king.jpg", shape: "landscape" },
-		{ title: "Beary nice sunrise in gouache", image: "beary-nice-sunrise.jpg", shape: "landscape" },
+		{
+			title: "Persimmons in acrylic marker",
+			image: "persimmons.jpg",
+			shape: "portrait",
+		},
+		{
+			title: "Quest for Navi in gouache",
+			image: "quest-for-navi.jpg",
+			shape: "landscape",
+		},
+		{
+			title: "Hollow king in gouache",
+			image: "hollow-king.jpg",
+			shape: "landscape",
+		},
+		{
+			title: "Beary nice sunrise in gouache",
+			image: "beary-nice-sunrise.jpg",
+			shape: "landscape",
+		},
 	] as Photo[],
 };
 
@@ -147,8 +163,8 @@ export const CONTACT = {
 	 * and offers a button that writes the email in Gmail.
 	 */
 	emailHelp: {
-		copied: "I copied my address to your clipboard. If your email app didn't open, just paste it into a new message:",
-		notCopied: "If your email app didn't open, just write to me at:",
+		copied: "copied email address to clipboard!",
+		notCopied: "if the email app didn't open, write to me at:",
 		gmailLabel: "write it in gmail",
 	},
 	/** Extra links, shown as buttons after the email button (none for now: GitHub and LinkedIn have their own apps). */
@@ -181,18 +197,17 @@ export const GITHUB = {
 	heading: "GitHub",
 	name: "Veronica Song",
 	username: "VeroS-pdf",
-	// TODO: tweak this blurb so it sounds like you.
-	blurb: "Peek at the code behind this website, and whatever else I'm tinkering with.",
+	blurb: "feel free to look around!",
 	/** Your GitHub profile address. */
 	url: "https://github.com/VeroS-pdf",
 	buttonLabel: "github",
 	/** Repositories to highlight. Add, remove or reword freely. */
 	repos: [
-		{
-			name: "Veronica_Intro",
-			description:
-				"This very website: a tiny pixel-art computer built with React and TypeScript.",
-			url: "https://github.com/VeroS-pdf/Veronica_Intro",
-		},
+		// {
+		// 	name: "Veronica_Intro",
+		// 	description:
+		// 		"This very website: a tiny pixel-art computer built with React and TypeScript.",
+		// 	url: "https://github.com/VeroS-pdf/Veronica_Intro",
+		// },
 	] as Repo[],
 };
