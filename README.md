@@ -11,7 +11,7 @@ The whole site is a tiny retro computer.
 3. **Tabs group together.** Explorer opens my bio in a teal browser window. Opening LinkedIn, GitHub, Projects or Mail adds each one as another tab in that same window (LinkedIn and GitHub show a profile card with a button to the real profile).
 4. **Photos.** The Photos app opens a gallery wall of simple black frames for pictures of paintings and drawings I've made in real life. A frame that has no picture set shows an empty placeholder.
 5. **Resume.** The Resume app (a green folder stuffed with papers) opens a Resume tab showing the whole page of my resume PDF right inside the browser window. Click the page, or press **open full size**, and the resume fills the whole screen at a readable size (close button or Esc to return); **download** saves the file. The desktop's faint scanlines are switched off while the resume is showing so no lines cross it.
-6. **Home button.** The little house button in the browser's toolbar opens a Home tab: a tiny mushroom house with a red spotted cap, a round door, window boxes and a smoking chimney, in a bright sunny forest. (Pressing it again just shows that tab; if Home is already open in another window, that window comes forward.) The picture is painted by code and reshapes itself to fit the window.
+6. **Home button.** The little house button in the browser's toolbar opens a Home tab: a mushroom cottage with a terracotta-tile roof, an arched door, ivy, pink flowers, stone steps and a smoking chimney, in a bright sunny forest. A moment after the page opens, the door swings open and a little white bunny hops out, smiles and waves hello, then hops back in and the door closes (it plays every time the Home tab is opened, and is skipped for visitors who prefer reduced motion). (Pressing the button again just shows that tab; if Home is already open in another window, that window comes forward.) The picture is painted by code and reshapes itself to fit the window.
 7. **Pull tabs apart.** **Drag a tab out of the window to make it its own little browser**, then move it anywhere. Drag a tab (or a one-tab window) onto another window's tab strip to put it back. Every tab has its own small **×** that closes just that tab (closing a window's last tab closes the window). Windows can also be dragged by their title bar, resized by their edges or corner grip, minimised to the taskbar, maximised, or closed whole with the corner button. Windows follow the screen too: they open at a share of the screen's size, and if you resize your browser window every window grows or shrinks with it (and stays on screen). The start menu has every app plus "Lock screen". **Click the time in the corner for a small calendar** with today highlighted and arrows to page between months (click elsewhere or press Escape to close it).
 
 On phone-sized screens windows simply fill the screen (dragging and resizing are off).
@@ -40,7 +40,9 @@ npm run preview    # serves the dist/ build locally
 | Redraw an app icon (e.g. the dragon globe)    | `src/art/appIcons.ts` (icons are drawn as text) |
 | Redraw dragons, stars and small icons         | `src/art/sprites.ts`                          |
 | Change the forest wallpaper (sky, sun, trees) | `src/art/landscape.ts`                        |
-| Redraw the Home button's mushroom house (colours, house, trees, smoke) | `src/art/mushroomHome.ts` (it is painted by code; `COLORS` at the top, the house in `paintMushroomHouse`) |
+| Redraw the Home button's cottage (roof, walls, door, ivy, steps) | `src/art/mushroomCottage.ts` (painted by code; `COLORS` at the top, the roof and walls are shapes made from a few points) |
+| Change the forest around the cottage (colours, trees, flowers, smoke) | `src/art/mushroomHome.ts` (`COLORS` at the top) |
+| Change the bunny or its visit (how long, when it waves) | `src/art/bunny.ts` (`FRAMES` is the whole visit, one line per moment) |
 | Change the lock screen's text                 | `SITE` in `src/config/siteConfig.ts`          |
 | Change how many stars twinkle on the lock screen | `STAR_COUNT` in `src/components/TwinklingStars.tsx` |
 | Change how many stars twinkle on the desktop, and how slowly | `DESKTOP_STARS` in `src/components/Desktop.tsx` |
@@ -61,7 +63,7 @@ src/
   pages.ts                 the pages that can appear as browser tabs
   types.ts                 shared TypeScript types
   config/siteConfig.ts     all the words and links on the site
-  art/                     pixel art as text (sprites, app icons) and the wallpaper and mushroom-house painters
+  art/                     pixel art as text (sprites, app icons) and the wallpaper, mushroom cottage and bunny painters
   state/                   the window manager
     desktopReducer.ts        rules for opening, moving, closing windows and opening, moving, closing tabs (pure logic)
     DesktopProvider.tsx      holds the windows and shares them with the components
